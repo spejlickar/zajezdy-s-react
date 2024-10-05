@@ -17,4 +17,8 @@ class HomeController {
         }
         [zajezd: zajezd]
     }
+
+    def spravce() {
+
+    }
 }

@@ -9,14 +9,14 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="${createLink(controller: 'zajezd', action: 'index')}">Zajezdy</a>
+
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <g:link class="nav-link" controller="zajezd" action="index">Zobrazit zájezdy</g:link>
+                    <g:link class="nav-link" controller="home" action="index">Zobrazit zájezdy</g:link>
                 </li>
                 <li class="nav-item">
-                    <g:link class="nav-link" controller="zajezd" action="create">Vytvořit zájezd</g:link>
+                    <g:link class="nav-link" controller="home" action="spravce">Správa zájezdů</g:link>
                 </li>
             </ul>
         </div>

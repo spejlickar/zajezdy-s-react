@@ -8,9 +8,10 @@ class UrlMappings {
             }
         }
 
-        "/"(view:"/index")
+        "/"(view:"/home/index")
         "500"(view:'/error')
         "404"(view:'/notFound')
+        "/zajezd/$id/fotky"(controller: 'zajezd', action: 'uploadFotky')
 
     }
 }
