@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React from "react";
 //import 'bootstrap/dist/css/bootstrap.min.css';
 import {
   BrowserRouter as Router,
@@ -8,8 +8,8 @@ import {
   Navigate,
 } from "react-router-dom";
 
-const ZajezdForm = lazy(() => import('./ZajezdForm'));
-const ZajezdIndex = lazy(() => import('./ZajezdIndex')); // předpokládáme, že máte komponentu pro zobrazení seznamu zájezdů
+import ZajezdForm from './ZajezdForm';
+import ZajezdIndex from './ZajezdIndex';
 
 const App = () => (
   <Router>
@@ -29,14 +29,14 @@ const App = () => (
         </ul>
       </nav>
 
-      <Suspense fallback={<div>Načítání...</div>}>
+      
         <Routes>
-          <Route index element={<Navigate to={"/zajezdy"} />} />
+          <Route path="home/spravce" element={<Navigate to={"/zajezdy"} />} />
           <Route path="/zajezdy" element={<ZajezdIndex />} />
           <Route path="/vytvor" element={<ZajezdForm />} />
           <Route path="/uprav/:id" element={<ZajezdForm />} />
         </Routes>
-      </Suspense>
+      
     </div>
   </Router>
 );

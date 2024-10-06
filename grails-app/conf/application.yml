@@ -55,14 +55,16 @@ grails:
       maxFileSize: 10485760
       maxRequestSize: 10485760
 dataSource:
-  url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-  driverClassName: org.h2.Driver
-  username: sa
-  password: ''
-  pooled: true
-  jmxExport: true
-  dbCreate: update
+    pooled: true
+    driverClassName: com.mysql.cj.jdbc.Driver
+    dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    username: root
+    password: ''
+    dbCreate: update
+    url: jdbc:mysql://localhost:3306/zajezdy?useUnicode=true&characterEncoding=UTF-8&useSSL=false&createDatabaseIfNotExist=true
 hibernate:
+  show_sql: true
+  format_sql: true
   cache:
     queries: false
     use_second_level_cache: false
