@@ -7,12 +7,17 @@ class ZajezdController extends RestfulController {
     static responseFormats = ['json', 'xml']
 
     def fileUploadService
+    ZajezdService zajezdService
 
     ZajezdController() {
         super(Zajezd)
     }
 
-
+    @Override
+    def index() {
+        def x = zajezdService.getList()
+        respond Zajezd.list()
+    }
 
     def uploadFotky(Long id) {
         def zajezd = Zajezd.get(id)

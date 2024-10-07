@@ -39,6 +39,9 @@ grails:
       - text/xml
       - application/xml
   views:
+    json:
+      default:
+        deep: true
     gsp:
       encoding: UTF-8
       htmlcodec: xml

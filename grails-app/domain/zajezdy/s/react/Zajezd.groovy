@@ -13,5 +13,6 @@ class Zajezd {
 
     static mapping = {
         popis type: 'text'
+
     }
 }

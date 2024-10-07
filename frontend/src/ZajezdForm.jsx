@@ -10,13 +10,13 @@ const ZajezdForm = () => {
 
   useEffect(() => {
     if (id) {
-      // Načtení dat zájezdu pro úpravu
+      // Načtení dat zájezdů pro úpravu
       fetch(`/zajezd/${id}`)
         .then((response) => response.json())
         .then((data) => {
           setNazev(data.nazev);
           setPopis(data.popis);
-          setFotky(data.fotky || []);
+          setFotky(data.fotky.map((fotka) => ({ ...fotka, file: null })) || []);
         })
         .catch((error) => console.error('Chyba při načítání zájezdu:', error));
     }
@@ -25,18 +25,16 @@ const ZajezdForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append('nazev', nazev);
-    formData.append('popis', popis);
-    fotky.forEach((fotka, index) => {
-      formData.append(`fotka${index}`, fotka.file);
-    });
+    const zajezdData = { nazev, popis, fotky };
 
     if (id) {
       // Úprava zájezdu
       fetch(`/zajezd/${id}`, {
         method: 'PUT',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(zajezdData),
       })
         .then((response) => {
           if (response.ok) {
@@ -50,7 +48,10 @@ const ZajezdForm = () => {
       // Vytvoření nového zájezdu
       fetch('/zajezd', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(zajezdData),
       })
         .then((response) => {
           if (response.ok) {
@@ -67,7 +68,7 @@ const ZajezdForm = () => {
     const files = Array.from(e.target.files);
     const fotkyData = files.map((file) => ({
       url: URL.createObjectURL(file),
-      popis: file.name,
+      popis: '',
       file: file,
     }));
     setFotky((prevFotky) => prevFotky.concat(fotkyData));
@@ -75,6 +76,14 @@ const ZajezdForm = () => {
 
   const handleAddFotka = () => {
     document.getElementById('fotkyInput').click();
+  };
+
+  const handlePopisChange = (index, value) => {
+    setFotky((prevFotky) =>
+      prevFotky.map((fotka, i) =>
+        i === index ? { ...fotka, popis: value } : fotka
+      )
+    );
   };
 
   return (
@@ -106,7 +115,14 @@ const ZajezdForm = () => {
             {fotky.map((fotka, index) => (
               <div key={index}>
                 <img src={fotka.url} alt={fotka.popis} width="100" />
-                <p>{fotka.popis}</p>
+                <div>Popis fotky:{fotka.popis}</div>
+                <input
+                  type="text"
+                  
+                  value={fotka.popis}
+                  onChange={(e) => handlePopisChange(index, e.target.value)}
+                  required
+                />
               </div>
             ))}
           </div>
