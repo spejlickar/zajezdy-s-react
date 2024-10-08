@@ -1,5 +1,6 @@
 package zajezdy.s.react
 
+import grails.converters.JSON
 import grails.rest.RestfulController
 
 class ZajezdController extends RestfulController {
@@ -15,8 +16,20 @@ class ZajezdController extends RestfulController {
 
     @Override
     def index() {
-        def x = zajezdService.getList()
-        respond Zajezd.list()
+        respond zajezdService.index()
+    }
+    @Override
+    def show() {
+        respond zajezdService.show(params.id as Long)
+    }
+    @Override
+    def save() {
+        respond zajezdService.save(params)
+    }
+
+    @Override
+    def update() {
+        respond zajezdService.update(params.id as Long,params)
     }
 
     def uploadFotky(Long id) {
