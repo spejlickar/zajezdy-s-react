@@ -19,9 +19,8 @@ class FotografieController extends RestfulController {
 
     // odešle soubor fotografie dle id fotografie
     def getSoubor(Long id){
-        def file = fotografieService.getSoubor(id)
+        def file = fotografieService.getFileByIdFotografie(id)
         if (file) {
-            // Nastavení hlaviček pro odpověď
             response.contentType = File.probeContentType(Paths.get(file.absolute))
             response.setHeader("Content-Disposition", "inline; filename=\"${file.name}\"")
             response.outputStream << file.bytes // Odeslání souboru do výstupu
@@ -32,12 +31,17 @@ class FotografieController extends RestfulController {
 
     }
 
-    //uloží novou fotku dle id fotografie
+    //uloží novou fotku do fotografie dle id
     @Override
     def save() {
-        def soubor = request.getFiles('soubor')
-        String cestaKSouboru = "uploads/${file.originalFilename}"
-        file.transferTo(new File(cestaKSouboru)) // Uložení souboru
+        fotografieService.saveFile(request.getFiles('file'))
+        super
+    }
+
+    //uloží změny fotografie dle id
+    @Override
+    def update() {
+        fotografieService.saveFile(request.getFiles('file'),params.id as Long)
         super
     }
 

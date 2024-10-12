@@ -7,7 +7,7 @@ import grails.gorm.transactions.Transactional
 class FotografieService {
 
     // vrátí soubor dle id fotografie jinak null
-    def getSoubor(Long id) {
+    def getFileByIdFotografie(Long id) {
         def fotografie = Fotografie.get(id) // Najdi záznam fotografie podle ID
 
         if (!fotografie || !fotografie.url) {
@@ -27,5 +27,12 @@ class FotografieService {
 
     def getFotografieByIdZajezd(Long id) {
         return Fotografie.findAllByZajezdId(Id)
+    }
+
+    def saveFile(File file, Long id = null){
+        if (file) {
+            if (id) File("${grailsApplication.config.app.uploadDir}/${Fotografie.get(params.id as Long).url}").delete()  //vymazaní souboru
+            file.transferTo(new File("${grailsApplication.config.app.uploadDir}/${file.originalFilename}")) // Uložení souboru
+        }
     }
 }
