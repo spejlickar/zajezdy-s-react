@@ -18,7 +18,7 @@ class FotografieController extends RestfulController {
     }
 
     // odešle soubor fotografie dle id fotografie
-    def getSoubor(Long id){
+    def getFile(Long id){
         def file = fotografieService.getFileByIdFotografie(id)
         if (file) {
             response.contentType = File.probeContentType(Paths.get(file.absolute))

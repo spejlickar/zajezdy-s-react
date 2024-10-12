@@ -9,26 +9,16 @@ class FotografieService {
     // vrátí soubor dle id fotografie jinak null
     def getFileByIdFotografie(Long id) {
         def fotografie = Fotografie.get(id) // Najdi záznam fotografie podle ID
-
-        if (!fotografie || !fotografie.url) {
-            // Pokud fotografie nebo cesta k souboru neexistuje
-            return null
-        }
-
-        // Předpokládejme, že url obsahuje relativní cestu k souboru ve složce "uploads"
-        def file = new File("/uploads/${fotografie.url}")
-
-        if (!file.exists()) {
-            // Pokud soubor na disku neexistuje
-            return null
-        }
+        if (!fotografie || !fotografie.url) return null   // pokud nexistuje zaznam v databazi vrat null
+        def file = new File("${grailsApplication.config.app.uploadDir}/${fotografie.url}")   //ziskani souboru
+        if (!file.exists()) return null  // Pokud soubor na disku neexistuje vrat null
         return file
     }
-
+    //vráti všechny fotografie dle id zajezdu
     def getFotografieByIdZajezd(Long id) {
         return Fotografie.findAllByZajezdId(Id)
     }
-
+    //pokud existuje soubor uloží ho do složky uploadDir a případně smaže starý (když existuje záznam) jinka nedělá nic
     def saveFile(File file, Long id = null){
         if (file) {
             if (id) File("${grailsApplication.config.app.uploadDir}/${Fotografie.get(params.id as Long).url}").delete()  //vymazaní souboru

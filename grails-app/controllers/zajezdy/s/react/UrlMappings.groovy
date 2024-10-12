@@ -10,12 +10,11 @@ class UrlMappings {
         "/api/fotografie"(resources: 'fotografie')
         "/api/zajezd"(resources: 'zajezd')
         "/api/fotografie/zajezd/$id"(controller: 'fotografie', action: 'getFotografieByIdZajezd')
-        "/api/fotografie/$id/soubor"(controller: 'fotografie', action: 'getSoubor')
+        "/api/fotografie/$id/file"(controller: 'fotografie', action: 'getFile')
 
         "/"(view:"/home/index")
         "500"(view:'/error')
         "404"(view:'/notFound')
-        "/zajezd/$id/fotky"(controller: 'zajezd', action: 'uploadFotky')
         "/zajezd"(resources: 'zajezd')
     }
 }

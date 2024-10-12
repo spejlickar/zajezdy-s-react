@@ -13,7 +13,7 @@ const ZajezdForm = () => {
     if (id) {
       setLoading(true);
       // Načtení dat zájezdů pro úpravu
-      fetch(`/zajezd/${id}`)
+      fetch(`/api/zajezd/${id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Chyba při načítání zájezdu');
@@ -23,12 +23,22 @@ const ZajezdForm = () => {
         .then((data) => {
           setNazev(data.nazev);
           setPopis(data.popis);
-          setFotky(data.fotky.map((fotka) => ({ ...fotka, file: null })) || []);
-          //console.log("fotky:",fotky);
         })
         .catch((error) => console.error(error.message))
         .finally(() => setLoading(false));
-
+      //nacteni fotek
+      fetch(`/api/fotografie/zajezd/${id}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Chyba při načítání fotek');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setFotky(data);
+          //console.log("fotky:",fotky);
+        })
+      
     }
   }, [id]);
 
@@ -133,7 +143,7 @@ const ZajezdForm = () => {
           <div className="fotogalerie">
             {fotky.map((fotka, index) => (
               <div key={index}>
-                <img src={fotka.url} alt={fotka.popis} width="100" />
+                <img src={`/api/fotografie/${id}/file?fileName=${fotka.url}`} alt={fotka.popis} width="100" />
                 <div>Popis fotky:</div>
                 <input
                   type="text"
