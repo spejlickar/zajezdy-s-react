@@ -24,9 +24,11 @@ const ZajezdForm = () => {
           setNazev(data.nazev);
           setPopis(data.popis);
           setFotky(data.fotky.map((fotka) => ({ ...fotka, file: null })) || []);
+          //console.log("fotky:",fotky);
         })
         .catch((error) => console.error(error.message))
         .finally(() => setLoading(false));
+
     }
   }, [id]);
 
@@ -73,7 +75,7 @@ const ZajezdForm = () => {
       file: file,
     }));
     setFotky((prevFotky) => prevFotky.concat(fotkyData));
-
+    
     // Uvolnění URL při odstranění fotky
     return () => {
       fotkyData.forEach((fotka) => URL.revokeObjectURL(fotka.url));
@@ -88,15 +90,20 @@ const ZajezdForm = () => {
     setFotky((prevFotky) =>
       prevFotky.map((fotka, i) => (i === index ? { ...fotka, popis: value } : fotka))
     );
+    //console.log("fotky:",fotky);
   };
 
   if (loading) {
     return <div>Načítání...</div>;
   }
 
+  console.log("fotky:",fotky);
+
   return (
+    
     <div>
-      <h1>{id ? 'Upravit zájezd' : 'Vytvořit nový zájezd'}</h1>
+      
+      <h1>{id ? 'Upravit Zájezd' : 'Vytvořit Nový zájezd'}</h1>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Název:</label>

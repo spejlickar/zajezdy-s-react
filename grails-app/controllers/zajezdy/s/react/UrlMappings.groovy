@@ -7,6 +7,10 @@ class UrlMappings {
                 // apply constraints here
             }
         }
+        "/api/fotografie"(resources: 'fotografie')
+        "/api/zajezd"(resources: 'zajezd')
+        "/api/fotografie/zajezd/$id"(controller: 'fotografie', action: 'getFotografieByIdZajezd')
+        "/api/fotografie/$id/soubor"(controller: 'fotografie', action: 'getSoubor')
 
         "/"(view:"/home/index")
         "500"(view:'/error')
