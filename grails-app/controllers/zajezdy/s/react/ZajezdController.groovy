@@ -14,7 +14,7 @@ class ZajezdController extends RestfulController {
         super(Zajezd)
     }
 
-    @Override
+    /*@Override
     def index() {
         respond zajezdService.index()
     }
@@ -30,7 +30,7 @@ class ZajezdController extends RestfulController {
     @Override
     def update() {
         respond zajezdService.update(params.id as Long,params)
-    }
+    }*/
 
     def uploadFotky(Long id) {
         def zajezd = Zajezd.get(id)

@@ -1,10 +1,12 @@
 package zajezdy.s.react
 
 import grails.gorm.transactions.Transactional
+import org.springframework.web.multipart.MultipartFile
 //import org.springframework.web.multipart.MultipartFile
 
 @Transactional
 class FotografieService {
+    def grailsApplication
 
     // vrátí soubor dle id fotografie jinak null
     def getFileByIdFotografie(Long id) {
@@ -16,13 +18,13 @@ class FotografieService {
     }
     //vráti všechny fotografie dle id zajezdu
     def getFotografieByIdZajezd(Long id) {
-        return Fotografie.findAllByZajezdId(Id)
+        return Fotografie.findAllByZajezd(Zajezd.get(id))
     }
     //pokud existuje soubor uloží ho do složky uploadDir a případně smaže starý (když existuje záznam) jinka nedělá nic
-    def saveFile(File file, Long id = null){
+    def saveFile(MultipartFile file, Long id = null){
         if (file) {
             if (id) File("${grailsApplication.config.app.uploadDir}/${Fotografie.get(params.id as Long).url}").delete()  //vymazaní souboru
-            file.transferTo(new File("${grailsApplication.config.app.uploadDir}/${file.originalFilename}")) // Uložení souboru
+            file.transferTo(new File("${grailsApplication.mainContext.servletContext.getRealPath("/")}/${file.originalFilename}")) // Uložení souboru
         }
     }
 }

@@ -13,8 +13,8 @@ class FotografieController extends RestfulController {
     }
 
     // odešle všechny fotografie dle id zájezdu
-    def getFotografieByIdZajezd(Long id){
-        respond fotografieService.getFotografieByIdZajezd(Long id)
+    def getFotografieByIdZajezd(){
+        respond fotografieService.getFotografieByIdZajezd(params.id as Long)
     }
 
     // odešle soubor fotografie dle id fotografie
@@ -34,14 +34,14 @@ class FotografieController extends RestfulController {
     //uloží novou fotku do fotografie dle id
     @Override
     def save() {
-        fotografieService.saveFile(request.getFiles('file'))
+        fotografieService.saveFile(request.getFiles('file')[0])
         super
     }
 
     //uloží změny fotografie dle id
     @Override
     def update() {
-        fotografieService.saveFile(request.getFiles('file'),params.id as Long)
+        fotografieService.saveFile(request.getFiles('file')[0],params.id as Long)
         super
     }
 

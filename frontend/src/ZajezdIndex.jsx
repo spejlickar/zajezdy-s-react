@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+const API_URL = "http://localhost:8080/api";
 
 const ZajezdIndex = () => {
   const [zajezdy, setZajezdy] = useState([]);
 
   useEffect(() => {
     // Načtení všech zájezdů z API (nebo z lokálního úložiště)
-    fetch('/zajezd')
+    fetch('api/zajezd')
       .then((response) => response.json())
       .then((data) => setZajezdy(data))
       .catch((error) => console.error('Chyba při načítání zájezdů:', error));
@@ -14,7 +15,7 @@ const ZajezdIndex = () => {
 
   const handleDelete = (id) => {
     if (window.confirm('Opravdu chcete tento zájezd smazat?')) {
-      fetch(`/zajezd/${id}`, {
+      fetch(`api/zajezd/${id}`, {
         method: 'DELETE',
       })
         .then((response) => {

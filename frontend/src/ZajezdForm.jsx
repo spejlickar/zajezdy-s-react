@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+const API_URL = "http://localhost:8080/api";
 
 const ZajezdForm = () => {
   const [nazev, setNazev] = useState('');
   const [popis, setPopis] = useState('');
   const [fotky, setFotky] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -13,7 +15,7 @@ const ZajezdForm = () => {
     if (id) {
       setLoading(true);
       // Načtení dat zájezdů pro úpravu
-      fetch(`/api/zajezd/${id}`)
+      fetch(`${API_URL}/zajezd/${id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Chyba při načítání zájezdu');
@@ -27,7 +29,7 @@ const ZajezdForm = () => {
         .catch((error) => console.error(error.message))
         .finally(() => setLoading(false));
       //nacteni fotek
-      fetch(`/api/fotografie/zajezd/${id}`)
+      fetch(`${API_URL}/fotografie/zajezd/${id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Chyba při načítání fotek');
@@ -36,85 +38,105 @@ const ZajezdForm = () => {
         })
         .then((data) => {
           setFotky(data);
-          //console.log("fotky:",fotky);
         })
-      
+        .catch((error) => console.error(error.message))
+        .finally(() => setLoading(false));
     }
   }, [id]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append('nazev', nazev);
-    formData.append('popis', popis);
-  
-    fotky.forEach((fotka, index) => {
-      if (fotka.file) {
-        formData.append(`fotka_${index}`, fotka.file);
-      }
-      formData.append(`fotka_${index}_popis`, fotka.popis);
-      formData.append(`fotka_${index}_url`, fotka.url);
-    });
-  
-    const url = id ? `/zajezd/${id}` : '/zajezd';
-    const method = id ? 'PUT' : 'POST';
-  
-    console.log('Odesílání zájezdu:', { method, url, formData });
-  
-    fetch(url, {
-      method: method,
-      body: formData,
-    })
-      .then((response) => {
+  const handleSubmitCreate = async (e) => {
+    e.preventDefault(); // Zabránění výchozímu chování formuláře
+    if (nazev === "") {
+      alert("Zadej název zájezd");
+    } else {
+      try {
+        const response = await fetch(`${API_URL}/zajezd`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ nazev: nazev, popis: "", fotky: [] }), // Převod objektu na JSON
+        });
+
         if (response.ok) {
-          navigate('/home/spravce');
+          const result = await response.json();
+          navigate(`/uprav/${result.id}`);
         } else {
-          return response.json().then((data) => {
-            console.error('Chyba při odesílání zájezdu', data);
-          });
+          alert("Chyba při ukládání zájezdu: " + response.status);
         }
-      })
-      .catch((error) => console.error('Chyba při odesílání zájezdu:', error));
+      } catch (error) {
+        console.error("Chyba:", error);
+        alert("Nastala chyba při odesílání dat");
+      }
+    }
   };
 
   const handleFotkyChange = (e) => {
-    const files = Array.from(e.target.files);
-    const fotkyData = files.map((file) => ({
-      url: URL.createObjectURL(file),
-      popis: '',
-      file: file,
-    }));
-    setFotky((prevFotky) => prevFotky.concat(fotkyData));
-    
-    // Uvolnění URL při odstranění fotky
-    return () => {
-      fotkyData.forEach((fotka) => URL.revokeObjectURL(fotka.url));
-    };
-  };
+    setFile(e.target.files[0]);
+    handleAddFotka();
+};
 
-  const handleAddFotka = () => {
-    document.getElementById('fotkyInput').click();
+  const handleAddFotka = async () => {
+    if (!file) {
+      alert('Prosím, vyberte soubor');
+      return;
+    }
+    const uploadInput = document.getElementById('fotkyInput');
+    uploadInput.value = null;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`${API_URL}/fotografie`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        alert('Soubor úspěšně nahrán');
+      setFotky((prevFotky) => [...prevFotky, { url: file.name, popis: '' }]);
+      } else {
+        alert('Chyba při nahrávání souboru');
+      }
+    } catch (error) {
+      console.error('Chyba:', error);
+      alert('Nastala chyba při nahrávání souboru');
+    }
   };
 
   const handlePopisChange = (index, value) => {
     setFotky((prevFotky) =>
       prevFotky.map((fotka, i) => (i === index ? { ...fotka, popis: value } : fotka))
     );
-    //console.log("fotky:",fotky);
   };
 
   if (loading) {
     return <div>Načítání...</div>;
   }
 
-  console.log("fotky:",fotky);
-
-  return (
-    
-    <div>
-      
-      <h1>{id ? 'Upravit Zájezd' : 'Vytvořit Nový zájezd'}</h1>
-      <form onSubmit={handleSubmit}>
+  if (!id) {
+    return (
+      <div>
+        <h1>Vytvořit nový zájezd</h1>
+        <form onSubmit={handleSubmitCreate}>
+          <div>
+            <label>Název:</label>
+            <input
+              type="text"
+              value={nazev}
+              onChange={(e) => setNazev(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit">Vytvořit</button>
+        </form>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h1>Upravit Zájezd</h1>
         <div>
           <label>Název:</label>
           <input
@@ -126,24 +148,22 @@ const ZajezdForm = () => {
         </div>
         <div>
           <label>Popis:</label>
-          <textarea value={popis} onChange={(e) => setPopis(e.target.value)} required />
+          <textarea value={popis || ''} onChange={(e) => setPopis(e.target.value)} required />
         </div>
         <div>
           <label>Fotografie:</label>
           <input
             id="fotkyInput"
             type="file"
-            multiple
             onChange={handleFotkyChange}
             style={{ display: 'none' }}
           />
-          <button type="button" onClick={handleAddFotka}>
-            Přidat fotky
-          </button>
+          <input type="file" id="fotkyInput" onChange={handleFotkyChange} />
+          <button type="button" onClick={handleAddFotka}>Vybrat a přidat fotku</button>
           <div className="fotogalerie">
             {fotky.map((fotka, index) => (
               <div key={index}>
-                <img src={`/api/fotografie/${id}/file?fileName=${fotka.url}`} alt={fotka.popis} width="100" />
+                <img src={`${API_URL}/fotografie/${id}/file?fileName=${fotka.url}`} alt={fotka.popis} width="100" />
                 <div>Popis fotky:</div>
                 <input
                   type="text"
@@ -155,10 +175,9 @@ const ZajezdForm = () => {
             ))}
           </div>
         </div>
-        <button type="submit">{id ? 'Upravit' : 'Vytvořit'}</button>
-      </form>
-    </div>
-  );
+      </div>
+    );
+  }
 };
 
 export default ZajezdForm;
