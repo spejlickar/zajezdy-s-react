@@ -3,11 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 const API_URL = "http://localhost:8080/api";
 
 const ZajezdForm = () => {
-  const [nazev, setNazev] = useState('');
-  const [popis, setPopis] = useState('');
-  const [fotky, setFotky] = useState([]);
+  const [zajezd, setZajezd] = useState({});   // data zájezdu z backendu
+  //const [popis, setPopis] = useState('');
+  const [fotky, setFotky] = useState([]);   // data fotek z backendu
+  const [editFotografie, setEditFotografie] = useState({});  //upravovana fotografie
+  //const [idEdit,setIdEdit] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState(null);
+  //const [file, setFile] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -23,8 +25,8 @@ const ZajezdForm = () => {
           return response.json();
         })
         .then((data) => {
-          setNazev(data.nazev);
-          setPopis(data.popis);
+          setZajezd(data);
+          //setPopis(data.popis);
         })
         .catch((error) => console.error(error.message))
         .finally(() => setLoading(false));
@@ -44,7 +46,7 @@ const ZajezdForm = () => {
     }
   }, [id]);
 
-  const handleSubmitCreate = async (e) => {
+  const handleSubmitCreate = async (e) => {  //tlačítko k vytvoření nového zájezdu
     e.preventDefault(); // Zabránění výchozímu chování formuláře
     if (nazev === "") {
       alert("Zadej název zájezd");
@@ -55,7 +57,7 @@ const ZajezdForm = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ nazev: nazev, popis: "", fotky: [] }), // Převod objektu na JSON
+          body: JSON.stringify(zajezd), // Převod objektu na JSON
         });
 
         if (response.ok) {
@@ -124,8 +126,8 @@ const ZajezdForm = () => {
             <label>Název:</label>
             <input
               type="text"
-              value={nazev}
-              onChange={(e) => setNazev(e.target.value)}
+              value={zajezd.nazev}
+              onChange={(e) => setZajezd({nazev:e.target.value, popis:"",fotky:[]})}
               required
             />
           </div>
@@ -141,14 +143,14 @@ const ZajezdForm = () => {
           <label>Název:</label>
           <input
             type="text"
-            value={nazev}
-            onChange={(e) => setNazev(e.target.value)}
+            value={zajezd.nazev}
+            onChange={(e) => setZajezd({...zajezd , nazev:e.target.value})}
             required
           />
         </div>
         <div>
           <label>Popis:</label>
-          <textarea value={popis || ''} onChange={(e) => setPopis(e.target.value)} required />
+          <textarea value={zajezd.popis || ''} onChange={(e) => setZajezd({...zajezd , popis:e.target.value})} required />
         </div>
         <div>
           <label>Fotografie:</label>

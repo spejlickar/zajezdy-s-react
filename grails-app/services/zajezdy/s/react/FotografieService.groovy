@@ -24,7 +24,7 @@ class FotografieService {
     def saveFile(MultipartFile file, Long id = null){
         if (file) {
             if (id) File("${grailsApplication.config.app.uploadDir}/${Fotografie.get(params.id as Long).url}").delete()  //vymazaní souboru
-            file.transferTo(new File("${grailsApplication.mainContext.servletContext.getRealPath("/")}/${file.originalFilename}")) // Uložení souboru
+            file.transferTo(new File("${}/${file.originalFilename}")) // Uložení souboru
         }
     }
 }
