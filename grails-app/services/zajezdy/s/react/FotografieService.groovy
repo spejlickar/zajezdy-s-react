@@ -21,10 +21,11 @@ class FotografieService {
         return Fotografie.findAllByZajezd(Zajezd.get(id))
     }
     //pokud existuje soubor uloží ho do složky uploadDir a případně smaže starý (když existuje záznam) jinka nedělá nic
-    def saveFile(MultipartFile file, Long id = null){
+    def saveFile(MultipartFile file,Long zajezdId, Long id = null){
         if (file) {
             if (id) File("${grailsApplication.config.app.uploadDir}/${Fotografie.get(params.id as Long).url}").delete()  //vymazaní souboru
             file.transferTo(new File("${}/${file.originalFilename}")) // Uložení souboru
         }
+
     }
 }
