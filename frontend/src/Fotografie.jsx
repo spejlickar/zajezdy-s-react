@@ -19,7 +19,7 @@ const Fotografie = ({ fotografie, zajezdId }) => {
         }));
 
         try {
-            const response = await fetch(`${API_URL}/fotografie${editFotografie.id ? "/" + editFotografie.id : ""}`, {
+            const response = await fetch(`${API_URL}/fotografie${editFotografie.id ? "/" + encodeURIComponent(editFotografie.id) : ""}`, {
                 method: editFotografie.id ? "PUT" : "POST",
                 body: formData
             });
@@ -55,7 +55,6 @@ const Fotografie = ({ fotografie, zajezdId }) => {
             <button type="button" onClick={(e) => { document.getElementById('fotkyInput').click(); }}>{textButton}</button>
         </div>)
     };
-
 
     if (!editFotografie) {  // není fotka na upravu
         return (<CreateEditFoto textButton="Přidej fotku" />)

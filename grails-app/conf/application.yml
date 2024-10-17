@@ -5,7 +5,7 @@ info:
     grailsVersion: '@info.app.grailsVersion@'
 grails:
   app:
-    uploadDir: "uploads"
+    uploadDir: 'uploads'
   mime:
     disable:
       accept:

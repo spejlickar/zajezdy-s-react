@@ -2,6 +2,7 @@ package zajezdy.s.react
 
 import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.nio.file.Paths
 //import org.springframework.web.multipart.MultipartFile
 
 @Transactional
@@ -23,8 +24,22 @@ class FotografieService {
     //pokud existuje soubor uloží ho do složky uploadDir a případně smaže starý (když existuje záznam) jinka nedělá nic
     def saveFile(MultipartFile file,Long zajezdId, Long id = null){
         if (file) {
-            if (id) File("${grailsApplication.config.app.uploadDir}/${Fotografie.get(params.id as Long).url}").delete()  //vymazaní souboru
-            file.transferTo(new File("${}/${file.originalFilename}")) // Uložení souboru
+            // Vymazání starého souboru, pokud id existuje
+            if (id) {
+                String oldFileUrl = Fotografie.get(id)?.url
+                if (oldFileUrl) {
+                    File("${'C:/grails_app/zajezdy-s-react'}/${oldFileUrl}").delete() // Vymazaní starého souboru
+                }
+            }
+
+            // Složka pro nahrání souborů
+            String uploadDir = "${'C:/grails_app/zajezdy-s-react'}/uploads"
+
+            // Vytvoření složky, pokud neexistuje
+            new File(uploadDir).mkdirs()
+
+            // Uložení nového souboru
+            file.transferTo(new File("${uploadDir}/${file.originalFilename}"))
         }
 
     }
