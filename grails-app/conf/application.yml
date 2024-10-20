@@ -66,8 +66,8 @@ dataSource:
     dbCreate: update
     url: jdbc:mysql://localhost:3306/zajezdy?useUnicode=true&characterEncoding=UTF-8&useSSL=false&createDatabaseIfNotExist=true
 hibernate:
-  show_sql: true
-  format_sql: true
+  show_sql: false
+  format_sql: false
   cache:
     queries: false
     use_second_level_cache: false

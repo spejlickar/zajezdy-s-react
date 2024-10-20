@@ -4,15 +4,10 @@ const API_URL = "http://localhost:8080/api";
 //komponenty:
 import Fotografie from './Fotografie';
 
-
 const ZajezdForm = () => {
   const [zajezd, setZajezd] = useState({});   // data zájezdu z backendu
-  //const [popis, setPopis] = useState('');
   const [fotky, setFotky] = useState([]);   // data fotek z backendu
-  //const [editFotografie, setEditFotografie] = useState({});  //upravovana fotografie
-  //const [idEdit,setIdEdit] = useState(null);
   const [loading, setLoading] = useState(false);
-  //const [file, setFile] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -29,7 +24,6 @@ const ZajezdForm = () => {
         })
         .then((data) => {
           setZajezd(data);
-          //setPopis(data.popis);
         })
         .catch((error) => console.error(error.message))
         .finally(() => setLoading(false));
@@ -49,10 +43,10 @@ const ZajezdForm = () => {
     }
   }, [id]);
 
-  const handleSubmitCreate = async (e) => {  //tlačítko k vytvoření nového zájezdu
+  const handleSubmitCreate = async (e) => {  // tlačítko k vytvoření nového zájezdu
     e.preventDefault(); // Zabránění výchozímu chování formuláře
-    if (nazev === "") {
-      alert("Zadej název zájezd");
+    if (zajezd.nazev === "") {
+      alert("Zadej název zájezdu");
     } else {
       try {
         const response = await fetch(`${API_URL}/zajezd`, {
@@ -76,7 +70,6 @@ const ZajezdForm = () => {
     }
   };
 
-  
   if (loading) {
     return <div>Načítání...</div>;
   }
@@ -90,8 +83,8 @@ const ZajezdForm = () => {
             <label>Název:</label>
             <input
               type="text"
-              value={zajezd.nazev}
-              onChange={(e) => setZajezd({ nazev: e.target.value, popis: "", fotky: [] })}
+              value={zajezd.nazev || ''}
+              onChange={(e) => setZajezd({ ...zajezd, nazev: e.target.value })}
               required
             />
           </div>
@@ -107,7 +100,7 @@ const ZajezdForm = () => {
           <label>Název:</label>
           <input
             type="text"
-            value={zajezd.nazev}
+            value={zajezd.nazev || ''}
             onChange={(e) => setZajezd({ ...zajezd, nazev: e.target.value })}
             required
           />
@@ -118,7 +111,7 @@ const ZajezdForm = () => {
         </div>
         <div>
           <h2>Fotografie:</h2>
-          <div><h3>Pridat fotku:</h3><Fotografie zajezdId={id}/> </div>
+          <div><h3>Přidat fotku:</h3><Fotografie zajezdId={id}/> </div>
           <div className="fotogalerie">
             {fotky.map((fotka, index) => (
               <div key={index}>

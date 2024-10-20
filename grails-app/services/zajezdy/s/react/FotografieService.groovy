@@ -3,6 +3,7 @@ package zajezdy.s.react
 import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Paths
+import grails.converters.JSON
 //import org.springframework.web.multipart.MultipartFile
 
 @Transactional
@@ -22,24 +23,37 @@ class FotografieService {
         return Fotografie.findAllByZajezd(Zajezd.get(id))
     }
     //pokud existuje soubor uloží ho do složky uploadDir a případně smaže starý (když existuje záznam) jinka nedělá nic
-    def saveFile(MultipartFile file,Long zajezdId, Long id = null){
+    def save(MultipartFile file,dataString, Long zajezdId, Long id = null){
         if (file) {
+            Fotografie fotografie
+            def data = JSON.parse(dataString)
+            def rootPath = servletContext.getRealPath("/");
+            //def fotografieDir = grailsApplication.config.grails.app.uploadDir;
+
             // Vymazání starého souboru, pokud id existuje
             if (id) {
                 String oldFileUrl = Fotografie.get(id)?.url
                 if (oldFileUrl) {
-                    File("${'C:/grails_app/zajezdy-s-react'}/${oldFileUrl}").delete() // Vymazaní starého souboru
+                    File( rootPath + oldFileUrl ).delete() // Vymazání starého souboru
                 }
+                fotografie = Fotografie.get(id)
+                fotografie.url = data.url
+                fotografie.popis = data.popis
+            } else {
+                // Použití prázdného konstruktoru a explicitní nastavení atributů
+                fotografie = new Fotografie()
+                fotografie.url = data.url
+                fotografie.popis = data.popis
+                fotografie.zajezd = Zajezd.get(zajezdId) // Nastavení reference na zájezd
             }
 
-            // Složka pro nahrání souborů
-            String uploadDir = "${'C:/grails_app/zajezdy-s-react'}/uploads"
-
-            // Vytvoření složky, pokud neexistuje
-            new File(uploadDir).mkdirs()
+            fotografie.save(flush: true)
 
             // Uložení nového souboru
-            file.transferTo(new File("${uploadDir}/${file.originalFilename}"))
+            file.transferTo(new File( rootPath + fotografie.url ))
+            return fotografie
+        } else {
+            return null
         }
 
     }

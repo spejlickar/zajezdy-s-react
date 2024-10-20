@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-const API_URL = "http://localhost:8080/api";
+
 
 const Fotografie = ({ fotografie, zajezdId }) => {
-    const [editFotografie, setEditFotografie] = useState(fotografie);  // upravovana fotka
+    const [editFotografie, setEditFotografie] = useState({  url:fotografie.url,
+                                                            tempUrl:fotografie.url,
+                                                            popis:fotografie.popis});  // upravovana fotka
     const [edit, setEdit] = useState(false);  // dochazi k uprave
     const navigate = useNavigate();
+    const fotografieDir = "uploads";
+
+    const generateUniqueFileName = (extension) => {
+        const timestamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 8);
+        return `file_${timestamp}_${randomString}.${extension}`;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Zabránění výchozímu chování formuláře
@@ -13,13 +22,13 @@ const Fotografie = ({ fotografie, zajezdId }) => {
         formData.append('file', editFotografie.file);   // fotka
         formData.append('zajezdId', zajezdId);   // id zajezdu
         formData.append('fotografie', JSON.stringify({
-            id: editFotografie.id,   // id fotky
+            id: editFotografie.id ? editFotografie.id : undefined,   // id fotky
             url: editFotografie.url,  //url fotky
             popis: editFotografie.popis   // popis fotky
         }));
 
         try {
-            const response = await fetch(`${API_URL}/fotografie${editFotografie.id ? "/" + encodeURIComponent(editFotografie.id) : ""}`, {
+            const response = await fetch(`/api/fotografie${editFotografie.id ? "/" + encodeURIComponent(editFotografie.id) : ""}`, {
                 method: editFotografie.id ? "PUT" : "POST",
                 body: formData
             });
@@ -41,7 +50,8 @@ const Fotografie = ({ fotografie, zajezdId }) => {
         const file = e.target.files[0];
         if (file) {
             const fotkaData = {
-                url: URL.createObjectURL(file),
+                url: "/" + fotografieDir + "/" + generateUniqueFileName(file.name.split('.').pop()),
+                tempUrl: URL.createObjectURL(file),
                 popis: editFotografie ? editFotografie.popis : "",
                 file: file,
             };
@@ -67,14 +77,14 @@ const Fotografie = ({ fotografie, zajezdId }) => {
                     <h2>{editFotografie.id ? 'Upravit fotografii' : 'Vytvořit novou fotografii'}</h2>
                     <CreateEditFoto textButton="Vybrat jinou fotku" />
                     <div>
-                        <img src={editFotografie.url} alt={editFotografie.popis} width="70" />
+                        <img src={editFotografie.tempUrl} alt={editFotografie.popis} width="70" />
                         <div>Popis fotky:</div>
                         <input
                             type="text"
-                            value={editFotografie.popis}
+                             value={editFotografie.popis}
                             onChange={(e) => setEditFotografie({ ...editFotografie, popis: e.target.value })}
                             required
-                        />
+                         />
                     </div>
                     <button type="submit">Uložit</button>
                 </form>
