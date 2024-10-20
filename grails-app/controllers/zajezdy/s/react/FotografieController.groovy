@@ -34,13 +34,15 @@ class FotografieController extends RestfulController {
     //uloží novou fotku do fotografie dle id
     @Override
     def save() {
-        respond fotografieService.save(request.getFile('file'),request.getParameter("fotografie"), request.getParameter("zajezdId") as Long)
+        def x = fotografieService.save(request.getFile('file'),request.getParameter("fotografie"), request.getParameter("zajezdId") as Long)
+        respond x
     }
 
     //uloží změny fotografie dle id
     @Override
     def update() {
-        respond fotografieService.saveFile(request.getFile('file'),request.getParameter("fotografie"),request.getParameter("zajezdId") as Long,params.id as Long)
+        def x =fotografieService.save(request.getFile('file'),request.getParameter("fotografie"),request.getParameter("zajezdId") as Long,params.id as Long)
+        respond x
     }
 
 }

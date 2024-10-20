@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-const API_URL = "http://localhost:8080/api";
-//komponenty:
+
 import Fotografie from './Fotografie';
 
 const ZajezdForm = () => {
+  const defaultFotografie = { url: '', popis: '' };
   const [zajezd, setZajezd] = useState({});   // data zájezdu z backendu
   const [fotky, setFotky] = useState([]);   // data fotek z backendu
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,7 @@ const ZajezdForm = () => {
     if (id) {
       setLoading(true);
       // Načtení dat zájezdů pro úpravu
-      fetch(`${API_URL}/zajezd/${id}`)
+      fetch(`/api/zajezd/${id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Chyba při načítání zájezdu');
@@ -28,7 +28,7 @@ const ZajezdForm = () => {
         .catch((error) => console.error(error.message))
         .finally(() => setLoading(false));
       //nacteni fotek
-      fetch(`${API_URL}/fotografie/zajezd/${id}`)
+      fetch(`/api/fotografie/zajezd/${id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Chyba při načítání fotek');
@@ -49,7 +49,7 @@ const ZajezdForm = () => {
       alert("Zadej název zájezdu");
     } else {
       try {
-        const response = await fetch(`${API_URL}/zajezd`, {
+        const response = await fetch(`/api/zajezd`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -115,7 +115,7 @@ const ZajezdForm = () => {
           <div className="fotogalerie">
             {fotky.map((fotka, index) => (
               <div key={index}>
-                <Fotografie fotografie={fotka} zajezdId={id}/>
+                <Fotografie fotografie={fotka || defaultFotografie} zajezdId={id} />
               </div>
             ))}
           </div>

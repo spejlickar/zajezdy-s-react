@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-
-const Fotografie = ({ fotografie, zajezdId }) => {
-    const [editFotografie, setEditFotografie] = useState({  url:fotografie.url,
-                                                            tempUrl:fotografie.url,
-                                                            popis:fotografie.popis});  // upravovana fotka
+// = { url: '', popis: '' }
+const Fotografie = ({ fotografie , zajezdId }) => {
+    const [editFotografie, setEditFotografie] = useState(fotografie?{id:fotografie.id, url: fotografie.url, tempUrl: fotografie.url, popis: fotografie.popis }:undefined);  // upravovana fotka
     const [edit, setEdit] = useState(false);  // dochazi k uprave
     const navigate = useNavigate();
-    const fotografieDir = "uploads";
+    const fotografieDir = "fotografie";
 
     const generateUniqueFileName = (extension) => {
         const timestamp = Date.now();
@@ -18,15 +16,17 @@ const Fotografie = ({ fotografie, zajezdId }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Zabránění výchozímu chování formuláře
-        const formData = new FormData();   //příprava dat k poslání
-        formData.append('file', editFotografie.file);   // fotka
-        formData.append('zajezdId', zajezdId);   // id zajezdu
+        const formData = new FormData(); // příprava dat k poslání
+        if (editFotografie.file) {
+            formData.append('file', editFotografie.file); // fotka
+        }
+        formData.append('zajezdId', zajezdId); // id zajezdu
         formData.append('fotografie', JSON.stringify({
-            id: editFotografie.id ? editFotografie.id : undefined,   // id fotky
-            url: editFotografie.url,  //url fotky
-            popis: editFotografie.popis   // popis fotky
+            id: editFotografie.id ? editFotografie.id : undefined, // id fotky
+            url: editFotografie.url, // url fotky
+            popis: editFotografie.popis // popis fotky
         }));
-
+        console.log(formData)
         try {
             const response = await fetch(`/api/fotografie${editFotografie.id ? "/" + encodeURIComponent(editFotografie.id) : ""}`, {
                 method: editFotografie.id ? "PUT" : "POST",
@@ -35,8 +35,11 @@ const Fotografie = ({ fotografie, zajezdId }) => {
 
             if (response.ok) {
                 const result = await response.json();
+                console.log(result)
                 setEdit(false);
                 navigate(`/uprav/${zajezdId}`);
+            } else if (response.status === 404) {
+                alert("Chyba: Server nenašel požadovanou cestu. Zkontrolujte URL.");
             } else {
                 alert("Chyba při ukládání editFotografie: " + response.status);
             }
@@ -50,6 +53,7 @@ const Fotografie = ({ fotografie, zajezdId }) => {
         const file = e.target.files[0];
         if (file) {
             const fotkaData = {
+                id:undefined,
                 url: "/" + fotografieDir + "/" + generateUniqueFileName(file.name.split('.').pop()),
                 tempUrl: URL.createObjectURL(file),
                 popis: editFotografie ? editFotografie.popis : "",
@@ -66,7 +70,7 @@ const Fotografie = ({ fotografie, zajezdId }) => {
         </div>)
     };
 
-    if (!editFotografie) {  // není fotka na upravu
+    if (!(editFotografie)) {  // není fotka na upravu
         return (<CreateEditFoto textButton="Přidej fotku" />)
     }
 

@@ -2,6 +2,8 @@ package zajezdy.s.react
 
 import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
+import grails.core.GrailsApplication
+import org.springframework.beans.factory.annotation.Autowired
 import java.nio.file.Paths
 import grails.converters.JSON
 //import org.springframework.web.multipart.MultipartFile
@@ -9,6 +11,8 @@ import grails.converters.JSON
 @Transactional
 class FotografieService {
     def grailsApplication
+    //@Autowired
+    //GrailsApplication grailsApplication
 
     // vrátí soubor dle id fotografie jinak null
     def getFileByIdFotografie(Long id) {
@@ -27,7 +31,8 @@ class FotografieService {
         if (file) {
             Fotografie fotografie
             def data = JSON.parse(dataString)
-            def rootPath = servletContext.getRealPath("/");
+            //C:\grails_app\zajezdy-s-react\grails-app\fotografie
+            String rootPath = System.getProperty("user.dir")+"/grails-app";
             //def fotografieDir = grailsApplication.config.grails.app.uploadDir;
 
             // Vymazání starého souboru, pokud id existuje
@@ -48,6 +53,11 @@ class FotografieService {
             }
 
             fotografie.save(flush: true)
+
+            File directory = new File(rootPath)
+            if (!directory.exists()) {
+                directory.mkdirs() // Vytvoří adresář, pokud neexistuje
+            }
 
             // Uložení nového souboru
             file.transferTo(new File( rootPath + fotografie.url ))
