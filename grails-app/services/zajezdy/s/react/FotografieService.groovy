@@ -18,7 +18,7 @@ class FotografieService {
     def getFileByIdFotografie(Long id) {
         def fotografie = Fotografie.get(id) // Najdi záznam fotografie podle ID
         if (!fotografie || !fotografie.url) return null   // pokud nexistuje zaznam v databazi vrat null
-        def file = new File("${grailsApplication.config.app.uploadDir}/${fotografie.url}")   //ziskani souboru
+        def file = new File(System.getProperty("user.dir")+"/grails-app"+fotografie.url)   //ziskani souboru
         if (!file.exists()) return null  // Pokud soubor na disku neexistuje vrat null
         return file
     }

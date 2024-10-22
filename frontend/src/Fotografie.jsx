@@ -98,7 +98,8 @@ const Fotografie = ({ fotografie , zajezdId }) => {
         return (
             <div>
                 <div>
-                    <img src={fotografie.url} alt={fotografie.popis} width="100" />
+                    <img src={`/api/fotografie/${fotografie.id}/file`} alt={fotografie.popis} width="100" />
+                    
                     <div>Popis fotky:{fotografie.popis}</div>
                 </div>
                 <a href="/" onClick={(e) => { e.preventDefault(); setEdit(true) }}>Upravit</a>
