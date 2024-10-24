@@ -1,6 +1,7 @@
 package zajezdy.s.react
 
 import grails.rest.RestfulController
+import io.micronaut.http.annotation.Get
 
 
 class FotografieController extends RestfulController {
@@ -18,16 +19,22 @@ class FotografieController extends RestfulController {
     }
 
     // odešle soubor fotografie dle id fotografie
-    def getFile(Long id){
-        def file = fotografieService.getFileByIdFotografie(id)
-        if (file) {
-            response.contentType = File.probeContentType(Paths.get(file.absolute))
-            response.setHeader("Content-Disposition", "inline; filename=\"${file.name}\"")
-            response.outputStream << file.bytes // Odeslání souboru do výstupu
-            response.outputStream.flush()
-        } else {
-            render status: 404, text: "Soubor nenalezen."
+    @Get
+    def getFile(String fileName){
+        def result = fotografieService.getFileByIdFotografie(fileName)
+
+        if (result.status == 404) {
+            render status: 404, text: result.message
+            return
         }
+
+        response.contentType = result.contentType
+        response.setHeader("Content-Disposition", "inline; filename=\"${result.file.name}\"")
+        response.flushBuffer() // Zajistěme, že hlavičky jsou odeslány
+
+        response.outputStream << result.file.bytes // Odeslání souboru do výstupu
+        response.outputStream.flush()
+
 
     }
 
@@ -41,7 +48,7 @@ class FotografieController extends RestfulController {
     //uloží změny fotografie dle id
     @Override
     def update() {
-        def x =fotografieService.save(request.getFile('file'),request.getParameter("fotografie"),request.getParameter("zajezdId") as Long,params.id as Long)
+        def x =fotografieService.save(request.getFile('file'),request.getParameter("fotografie"),request.getParameter("zajezdId") as Long)
         respond x
     }
 

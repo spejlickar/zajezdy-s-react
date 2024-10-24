@@ -7,6 +7,7 @@ const ZajezdForm = () => {
   const defaultFotografie = { url: '', popis: '' };
   const [zajezd, setZajezd] = useState({});   // data zájezdu z backendu
   const [fotky, setFotky] = useState([]);   // data fotek z backendu
+  
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -115,7 +116,7 @@ const ZajezdForm = () => {
           <div className="fotogalerie">
             {fotky.map((fotka, index) => (
               <div key={index}>
-                <Fotografie fotografie={fotka || defaultFotografie} zajezdId={id} />
+                <Fotografie fotky={fotky} setFotky={setFotky} showIndex={index} zajezdId={id} />
               </div>
             ))}
           </div>

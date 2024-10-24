@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // = { url: '', popis: '' }
-const Fotografie = ({ fotografie , zajezdId }) => {
-    const [editFotografie, setEditFotografie] = useState(fotografie?{id:fotografie.id, url: fotografie.url, tempUrl: fotografie.url, popis: fotografie.popis }:undefined);  // upravovana fotka
+const Fotografie = ({ fotky, setFotky, showIndex , zajezdId }) => {
+    //const [editFotografie, setEditFotografie] = useState(fotografie?{id:fotografie.id, url: fotografie.url, tempUrl: fotografie.url, popis: fotografie.popis }:undefined);  // upravovana fotka
     const [edit, setEdit] = useState(false);  // dochazi k uprave
     const navigate = useNavigate();
+    const editFotografie = showIndex ? fotky(showIndex) : undefined 
     const fotografieDir = "fotografie";
 
     const generateUniqueFileName = (extension) => {
@@ -53,8 +54,8 @@ const Fotografie = ({ fotografie , zajezdId }) => {
         const file = e.target.files[0];
         if (file) {
             const fotkaData = {
-                id:undefined,
-                url: "/" + fotografieDir + "/" + generateUniqueFileName(file.name.split('.').pop()),
+                id:editFotografie ? editFotografie.id : undefined,
+                url: "/fotogalerie/" + generateUniqueFileName(file.name.split('.').pop()),
                 tempUrl: URL.createObjectURL(file),
                 popis: editFotografie ? editFotografie.popis : "",
                 file: file,
@@ -85,7 +86,7 @@ const Fotografie = ({ fotografie , zajezdId }) => {
                         <div>Popis fotky:</div>
                         <input
                             type="text"
-                             value={editFotografie.popis}
+                            value={editFotografie.popis}
                             onChange={(e) => setEditFotografie({ ...editFotografie, popis: e.target.value })}
                             required
                          />
@@ -98,9 +99,9 @@ const Fotografie = ({ fotografie , zajezdId }) => {
         return (
             <div>
                 <div>
-                    <img src={`/api/fotografie/${fotografie.id}/file`} alt={fotografie.popis} width="100" />
+                    <img src={editFotografie.url} alt={editFotografie.popis} width="100" />
                     
-                    <div>Popis fotky:{fotografie.popis}</div>
+                    <div>Popis fotky:{editFotografie.popis}</div>
                 </div>
                 <a href="/" onClick={(e) => { e.preventDefault(); setEdit(true) }}>Upravit</a>
             </div>
