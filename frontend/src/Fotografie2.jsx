@@ -3,18 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 // = { url: '', popis: '' }
 const Fotografie = ({ fotky, setFotky, showIndex , zajezdId }) => {
-    const [editFotografie, setEditFotografie] = useState(showIndex?{id:fotky[showIndex].id, url: fotky[showIndex].url, tempUrl: fotky[showIndex].url, popis: fotky[showIndex].popis }:undefined);  // upravovana fotka
+    //const [editFotografie, setEditFotografie] = useState(fotografie?{id:fotografie.id, url: fotografie.url, tempUrl: fotografie.url, popis: fotografie.popis }:undefined);  // upravovana fotka
     const [edit, setEdit] = useState(false);  // dochazi k uprave
     const navigate = useNavigate();
-    //const editFotografie = showIndex ? fotky(showIndex) : undefined 
+    const editFotografie = showIndex ? fotky(showIndex) : undefined 
     const fotografieDir = "fotografie";
-
-    const updateFotky = () => {
-        fotky[showIndex] = {
-            
-        }
-        setFotky();
-    }
 
     const generateUniqueFileName = (extension) => {
         const timestamp = Date.now();

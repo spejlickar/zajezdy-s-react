@@ -112,7 +112,7 @@ const ZajezdForm = () => {
         </div>
         <div>
           <h2>Fotografie:</h2>
-          <div><h3>Přidat fotku:</h3><Fotografie zajezdId={id}/> </div>
+          <div><h3>Přidat fotku:</h3><Fotografie fotky={fotky} setFotky={setFotky} showIndex={index} zajezdId={id}/> </div>
           <div className="fotogalerie">
             {fotky.map((fotka, index) => (
               <div key={index}>
