@@ -37,23 +37,26 @@ class FotografieService {
         return Fotografie.findAllByZajezd(Zajezd.get(id))
     }
     //pokud existuje soubor uloží ho do složky uploadDir a případně smaže starý (když existuje záznam) jinka nedělá nic
-    def save(MultipartFile file,String dataString, Long zajezdId){
+    def save(MultipartFile file, String dataString, Long zajezdId) {
         def data = JSON.parse(dataString)
         Fotografie fotografie = data.id ? Fotografie.get(data.id) : new Fotografie()
-        fotografie.zajezd = fotografie.zajezd? fotografie.zajezd : Zajezd.get(zajezdId)
+        fotografie.zajezd = fotografie.zajezd ? fotografie.zajezd : Zajezd.get(zajezdId)
         fotografie.popis = data.popis
         fotografie.url = data.url
         fotografie.save(flush: true)
-        if (file ) {
+
+        if (file) {
             String rootPath = System.getProperty("user.dir") + "/grails-app";
-            if (data.id) {
-                File(rootPath + fotografie.url).delete()
+            File targetFile = new File(rootPath + data.url)
+
+            if (data.id && targetFile.exists()) {
+                targetFile.delete()
             }
-            file.transferTo(new File( rootPath + fotografie.url ))
+
+            targetFile = new File(rootPath + fotografie.url)
+            file.transferTo(targetFile)
         }
 
-            return fotografie
-
-
+        return fotografie
     }
 }

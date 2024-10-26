@@ -7,7 +7,7 @@ const ZajezdForm = () => {
   const defaultFotografie = { url: '', popis: '' };
   const [zajezd, setZajezd] = useState({});   // data zájezdu z backendu
   const [fotky, setFotky] = useState([]);   // data fotek z backendu
-  
+  const [editIndex, setEditIndex] = useState(undefined);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -75,6 +75,8 @@ const ZajezdForm = () => {
     return <div>Načítání...</div>;
   }
 
+//fotky={fotky} setFotky={setFotky} showIndex={index} editIndex={editIndex} setEditIndex={setEditIndex}
+
   if (!id) {
     return (
       <div>
@@ -112,11 +114,11 @@ const ZajezdForm = () => {
         </div>
         <div>
           <h2>Fotografie:</h2>
-          <div><h3>Přidat fotku:</h3><Fotografie fotky={fotky} setFotky={setFotky} showIndex={index} zajezdId={id}/> </div>
+          <div><h3>Přidat fotku:</h3><Fotografie zajezdId={id}/> </div>
           <div className="fotogalerie">
             {fotky.map((fotka, index) => (
               <div key={index}>
-                <Fotografie fotky={fotky} setFotky={setFotky} showIndex={index} zajezdId={id} />
+                <Fotografie fotografie={fotka} zajezdId={id} />
               </div>
             ))}
           </div>

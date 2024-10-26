@@ -2,12 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // = { url: '', popis: '' }
-const Fotografie = ({ fotky, setFotky, showIndex , zajezdId }) => {
-    //const [editFotografie, setEditFotografie] = useState(fotografie?{id:fotografie.id, url: fotografie.url, tempUrl: fotografie.url, popis: fotografie.popis }:undefined);  // upravovana fotka
+const Fotografie = ({ fotky, setFotky, showIndex , editIndex, setIndex, zajezdId }) => {
+    const fotografie = showIndex?{id:fotky[showIndex].id, url: fotky[showIndex].url, tempUrl: fotky[showIndex].url, popis: fotky[showIndex].popis, file:undefined }:undefined;
+    //const newFotografie
+    //const edit = (showIndex == editIndex);
+    //const [editFotografie, setEditFotografie] = useState(showIndex?{id:fotky[showIndex].id, url: fotky[showIndex].url, tempUrl: fotky[showIndex].url, popis: fotky[showIndex].popis }:undefined);  // upravovana fotka
     const [edit, setEdit] = useState(false);  // dochazi k uprave
     const navigate = useNavigate();
-    const editFotografie = showIndex ? fotky(showIndex) : undefined 
+    //const editFotografie = showIndex ? fotky(showIndex) : undefined 
     const fotografieDir = "fotografie";
+
+    const updateFotky = () => {
+        fotky[showIndex] = {
+            url: editFotografie.url,
+            popis: editFotografie.popis
+        }
+        setFotky(fotky);
+    }
 
     const generateUniqueFileName = (extension) => {
         const timestamp = Date.now();
@@ -37,8 +48,8 @@ const Fotografie = ({ fotky, setFotky, showIndex , zajezdId }) => {
             if (response.ok) {
                 const result = await response.json();
                 console.log(result)
-                setEdit(false);
-                navigate(`/uprav/${zajezdId}`);
+                setEditIndex(undefined);
+                
             } else if (response.status === 404) {
                 alert("Chyba: Server nenašel požadovanou cestu. Zkontrolujte URL.");
             } else {
@@ -61,6 +72,7 @@ const Fotografie = ({ fotky, setFotky, showIndex , zajezdId }) => {
                 file: file,
             };
             setEditFotografie(fotkaData);
+            updateFotky();
         }
     };
 

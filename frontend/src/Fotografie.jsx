@@ -2,19 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // = { url: '', popis: '' }
-const Fotografie = ({ fotky, setFotky, showIndex , zajezdId }) => {
-    const [editFotografie, setEditFotografie] = useState(showIndex?{id:fotky[showIndex].id, url: fotky[showIndex].url, tempUrl: fotky[showIndex].url, popis: fotky[showIndex].popis }:undefined);  // upravovana fotka
+const Fotografie = ({ fotografie , zajezdId }) => {
+    const [editFotografie, setEditFotografie] = useState(fotografie?{id:fotografie.id, url: fotografie.url, tempUrl: fotografie.url, popis: fotografie.popis }:undefined);  // upravovana fotka
     const [edit, setEdit] = useState(false);  // dochazi k uprave
     const navigate = useNavigate();
     //const editFotografie = showIndex ? fotky(showIndex) : undefined 
     const fotografieDir = "fotografie";
-
-    const updateFotky = () => {
-        fotky[showIndex] = {
-            
-        }
-        setFotky();
-    }
 
     const generateUniqueFileName = (extension) => {
         const timestamp = Date.now();
@@ -31,7 +24,7 @@ const Fotografie = ({ fotky, setFotky, showIndex , zajezdId }) => {
         formData.append('zajezdId', zajezdId); // id zajezdu
         formData.append('fotografie', JSON.stringify({
             id: editFotografie.id ? editFotografie.id : undefined, // id fotky
-            url: editFotografie.url, // url fotky
+            url: editFotografie.file ? "/fotogalerie/" + generateUniqueFileName(editFotografie.file.name.split('.').pop()) : editFotografie.url, // url fotky
             popis: editFotografie.popis // popis fotky
         }));
         console.log(formData)
@@ -59,24 +52,18 @@ const Fotografie = ({ fotky, setFotky, showIndex , zajezdId }) => {
 
     const handleFotkyChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            const fotkaData = {
-                id:editFotografie ? editFotografie.id : undefined,
-                url: "/fotogalerie/" + generateUniqueFileName(file.name.split('.').pop()),
-                tempUrl: URL.createObjectURL(file),
-                popis: editFotografie ? editFotografie.popis : "",
-                file: file,
-            };
-            setEditFotografie(fotkaData);
-        }
+        if (file) { setEditFotografie({...editFotografie, file: file, tempUrl: URL.createObjectURL(file)}); }
     };
-
     const CreateEditFoto = ({ textButton }) => {
-        return (<div>
-            <input id="fotkyInput" type="file" onChange={handleFotkyChange} style={{ display: 'none' }} />
-            <button type="button" onClick={(e) => { document.getElementById('fotkyInput').click(); }}>{textButton}</button>
-        </div>)
-    };
+        const idInput = "fotkyInput" + (editFotografie?.id ?? `${Date.now()}-${Math.random()}`);
+        return (
+          <div>
+            <input id={idInput} type="file" onChange={handleFotkyChange} style={{ display: 'none' }} />
+            <button type="button" onClick={() => { document.getElementById(idInput).click(); }} > {textButton} </button>
+          </div>
+        );
+      };
+    
 
     if (!(editFotografie)) {  // není fotka na upravu
         return (<CreateEditFoto textButton="Přidej fotku" />)
@@ -93,7 +80,7 @@ const Fotografie = ({ fotky, setFotky, showIndex , zajezdId }) => {
                         <div>Popis fotky:</div>
                         <input
                             type="text"
-                            value={editFotografie.popis}
+                            value={editFotografie.popis ? editFotografie.popis:""}
                             onChange={(e) => setEditFotografie({ ...editFotografie, popis: e.target.value })}
                             required
                          />
