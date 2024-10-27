@@ -7,7 +7,7 @@ const ZajezdForm = () => {
   const defaultFotografie = { url: '', popis: '' };
   const [zajezd, setZajezd] = useState({});   // data zájezdu z backendu
   const [fotky, setFotky] = useState([]);   // data fotek z backendu
-  const [editIndex, setEditIndex] = useState(undefined);
+  //const [editIndex, setEditIndex] = useState(undefined);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -71,6 +71,15 @@ const ZajezdForm = () => {
     }
   };
 
+  const addFotografie =  (fotografie) => {
+    setFotky([...fotky, {id: fotografie.id, url: fotografie.url, popis: fotografie.popis}]);
+  };
+  
+
+  const deleteFotografie = (fotografie) => {
+    setFotky(fotky.filter(i => i.id !== fotografie.id));
+};
+
   if (loading) {
     return <div>Načítání...</div>;
   }
@@ -81,7 +90,7 @@ const ZajezdForm = () => {
     return (
       <div>
         <h1>Vytvořit nový zájezd</h1>
-        <form onSubmit={handleSubmitCreate}>
+        <div>
           <div>
             <label>Název:</label>
             <input
@@ -91,8 +100,8 @@ const ZajezdForm = () => {
               required
             />
           </div>
-          <button type="submit">Vytvořit</button>
-        </form>
+          <button type="button" onClick={handleSubmitCreate}>Vytvořit</button>
+        </div>
       </div>
     );
   } else {
@@ -114,11 +123,11 @@ const ZajezdForm = () => {
         </div>
         <div>
           <h2>Fotografie:</h2>
-          <div><h3>Přidat fotku:</h3><Fotografie zajezdId={id}/> </div>
+          <div><h3>Přidat fotku:</h3><Fotografie addFotografie = {addFotografie} zajezdId={id}/> </div>
           <div className="fotogalerie">
             {fotky.map((fotka, index) => (
               <div key={index}>
-                <Fotografie fotografie={fotka} zajezdId={id} />
+                <Fotografie deleteFotografie = {deleteFotografie} fotografie={fotka} zajezdId={id} />
               </div>
             ))}
           </div>

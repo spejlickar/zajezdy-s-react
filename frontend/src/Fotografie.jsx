@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // = { url: '', popis: '' }
-const Fotografie = ({ fotografie , zajezdId }) => {
+const Fotografie = ({ addFotografie = () => {}, deleteFotografie, fotografie, zajezdId }) => {
     const [editFotografie, setEditFotografie] = useState(fotografie?{id:fotografie.id, url: fotografie.url, tempUrl: fotografie.url, popis: fotografie.popis }:undefined);  // upravovana fotka
     const [edit, setEdit] = useState(false);  // dochazi k uprave
     const navigate = useNavigate();
@@ -15,16 +15,16 @@ const Fotografie = ({ fotografie , zajezdId }) => {
         return `file_${timestamp}_${randomString}.${extension}`;
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault(); // Zabránění výchozímu chování formuláře
+    const handleSave = async () => {
         const formData = new FormData(); // příprava dat k poslání
-        if (editFotografie.file) {
-            formData.append('file', editFotografie.file); // fotka
+        if (editFotografie.file) { //je vybrana nová fotka
+            formData.append('file', editFotografie.file); // přiložení nové fotky
+            editFotografie.url = "/fotogalerie/" + generateUniqueFileName(editFotografie.file.name.split('.').pop());  // vygenerování nové url
         }
         formData.append('zajezdId', zajezdId); // id zajezdu
         formData.append('fotografie', JSON.stringify({
             id: editFotografie.id ? editFotografie.id : undefined, // id fotky
-            url: editFotografie.file ? "/fotogalerie/" + generateUniqueFileName(editFotografie.file.name.split('.').pop()) : editFotografie.url, // url fotky
+            url: editFotografie.url, // url fotky
             popis: editFotografie.popis // popis fotky
         }));
         console.log(formData)
@@ -37,8 +37,33 @@ const Fotografie = ({ fotografie , zajezdId }) => {
             if (response.ok) {
                 const result = await response.json();
                 console.log(result)
-                setEdit(false);
-                navigate(`/uprav/${zajezdId}`);
+                if (editFotografie.id){ // došlo jen k úpravě
+                    setEdit(false);
+                    setEditFotografie(result);
+                } else {  //došlo k vytvoření nové fotografii
+                    setEditFotografie(undefined);
+                    addFotografie(result);
+                }
+                
+                
+                //navigate(`/uprav/${zajezdId}`);
+            } else if (response.status === 404) {
+                alert("Chyba: Server nenašel požadovanou cestu. Zkontrolujte URL.");
+            } else {
+                alert("Chyba při ukládání editFotografie: " + response.status);
+            }
+        } catch (error) {
+            console.error("Chyba:", error);
+            alert("Nastala chyba při odesílání dat");
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(`/api/fotografie/${editFotografie.id}`, { method: "DELETE" });
+            if (response.ok) {
+                
+                deleteFotografie(editFotografie);
             } else if (response.status === 404) {
                 alert("Chyba: Server nenašel požadovanou cestu. Zkontrolujte URL.");
             } else {
@@ -72,7 +97,7 @@ const Fotografie = ({ fotografie , zajezdId }) => {
     if (edit || !(editFotografie.id)) { // pokud je povolen edit nebo editFotografie není vytvořená dojde k upravě a případnému vytvoření 
         return (
             <div>
-                <form onSubmit={handleSubmit}>
+                <div>
                     <h2>{editFotografie.id ? 'Upravit fotografii' : 'Vytvořit novou fotografii'}</h2>
                     <CreateEditFoto textButton="Vybrat jinou fotku" />
                     <div>
@@ -85,8 +110,10 @@ const Fotografie = ({ fotografie , zajezdId }) => {
                             required
                          />
                     </div>
-                    <button type="submit">Uložit</button>
-                </form>
+                    <button type="button" onClick={handleSave}>Uložit</button>
+                    <button type="button" onClick={() => setEdit(false)}>Storno</button>
+                    {editFotografie.id && <button type="button" onClick={handleDelete}>Smazat</button>}
+                </div>
             </div>
         );
     } else { // jen zobrazení fotografie

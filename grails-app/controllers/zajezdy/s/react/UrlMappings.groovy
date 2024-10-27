@@ -9,8 +9,8 @@ class UrlMappings {
         }
 
         "/fotogalerie/$fileName"(controller: 'fotografie', action: 'getFile', method:'GET')
-        "/api/fotografie/zajezd/$id"(controller: 'fotografie', action: 'getFotografieByIdZajezd')
         "/api/fotografie"(resources: 'fotografie')
+        "/api/fotografie/zajezd/$id"(controller: 'fotografie', action: 'getFotografieByIdZajezd')
         "/api/zajezd"(resources: 'zajezd')
 
 
