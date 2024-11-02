@@ -123,11 +123,11 @@ const ZajezdForm = () => {
         </div>
         <div>
           <h2>Fotografie:</h2>
-          <div><h3>Přidat fotku:</h3><Fotografie addFotografie = {addFotografie} zajezdId={id}/> </div>
+          <div><h3>Přidat fotku:</h3><Fotografie fotografie={{ zajezd: { id: id } }} addFotografie={addFotografie} /> </div>
           <div className="fotogalerie">
             {fotky.map((fotka, index) => (
               <div key={index}>
-                <Fotografie deleteFotografie = {deleteFotografie} fotografie={fotka} zajezdId={id} />
+                <Fotografie fotografie={fotka} deleteFotografie = {deleteFotografie} />
               </div>
             ))}
           </div>

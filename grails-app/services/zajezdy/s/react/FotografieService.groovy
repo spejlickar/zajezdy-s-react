@@ -39,12 +39,11 @@ class FotografieService {
     }
 
     //pokud existuje soubor uloží ho do složky uploadDir a případně smaže starý (když existuje záznam) jinka nedělá nic
-    def save(MultipartFile file, String dataString, Long zajezdId) {
+    def save(MultipartFile file, String dataString) {
         def data = JSON.parse(dataString)
         Fotografie fotografie = (data.id) ? Fotografie.get(data.id) : new Fotografie()  // zjistění instance Fotografie
-        fotografie.zajezd = (fotografie.zajezd) ? fotografie.zajezd : Zajezd.get(zajezdId)  // zjistění reference na zájezd
+        fotografie.zajezd = (fotografie.zajezd) ? fotografie.zajezd : Zajezd.get(data.zajezd.id as Long)  // zjistění reference na zájezd
         fotografie.popis = data.popis  // uložení nového popisu
-
         if (file) { // pokud přišel i soubor
             String rootPath = System.getProperty("user.dir") + File.separator + "grails-app"
             if (data.id) { // pokud jde o úpravu, tak případně dojde ke smazání stávající fotky

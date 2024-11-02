@@ -2,11 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // = { url: '', popis: '' }
-const Fotografie = ({ addFotografie = () => {}, deleteFotografie, fotografie, zajezdId }) => {
-    const [editFotografie, setEditFotografie] = useState(fotografie?{id:fotografie.id, url: fotografie.url, tempUrl: fotografie.url, popis: fotografie.popis }:undefined);  // upravovana fotka
+const Fotografie = ({fotografie, addFotografie, deleteFotografie}) => {
+    const [editFotografie, setEditFotografie] = useState(fotografie.url?{...fotografie, tempUrl:fotografie.url}:fotografie);  // upravovana fotka
     const [edit, setEdit] = useState(false);  // dochazi k uprave
-    const navigate = useNavigate();
-    //const editFotografie = showIndex ? fotky(showIndex) : undefined 
     const fotografieDir = "fotografie";
 
     const generateUniqueFileName = (extension) => {
@@ -21,12 +19,14 @@ const Fotografie = ({ addFotografie = () => {}, deleteFotografie, fotografie, za
             formData.append('file', editFotografie.file); // přiložení nové fotky
             editFotografie.url = "/fotogalerie/" + generateUniqueFileName(editFotografie.file.name.split('.').pop());  // vygenerování nové url
         }
-        formData.append('zajezdId', zajezdId); // id zajezdu
-        formData.append('fotografie', JSON.stringify({
+        const {file, temUrl,...cleanFotografie} = editFotografie; //separace nežádoucích atributů co se nemají posílat
+        formData.append('fotografie', JSON.stringify(cleanFotografie));
+        /*formData.append('fotografie', JSON.stringify({
             id: editFotografie.id ? editFotografie.id : undefined, // id fotky
             url: editFotografie.url, // url fotky
-            popis: editFotografie.popis // popis fotky
-        }));
+            popis: editFotografie.popis, // popis fotky
+            zajezd: {id:zajezdId}
+        }));*/
         console.log(formData)
         try {
             const response = await fetch(`/api/fotografie${editFotografie.id ? "/" + encodeURIComponent(editFotografie.id) : ""}`, {
@@ -41,7 +41,7 @@ const Fotografie = ({ addFotografie = () => {}, deleteFotografie, fotografie, za
                     setEdit(false);
                     setEditFotografie(result);
                 } else {  //došlo k vytvoření nové fotografii
-                    setEditFotografie(undefined);
+                    setEditFotografie({ zajezd: { id: editFotografie.zajezd.id }});
                     addFotografie(result);
                 }
                 
@@ -90,7 +90,7 @@ const Fotografie = ({ addFotografie = () => {}, deleteFotografie, fotografie, za
       };
     
 
-    if (!(editFotografie)) {  // není fotka na upravu
+    if (!(editFotografie.tempUrl)) {  // není fotka na upravu
         return (<CreateEditFoto textButton="Přidej fotku" />)
     }
 
