@@ -3,7 +3,11 @@ import React, { useEffect, useState } from 'react';
 const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
     const [edit, setEdit] = useState(false);  // stav fotografie upravovana/NEuprovaná (výchozí stav NEuprovaná)
 
-    const generateUniqueFileName = (extension) => {
+    useEffect(() => { // Spustí jen jednou při vytvoření komponenty
+        if (index) { if (fotky[index].id === undefined) {handleSave();}}
+    }, []); 
+
+    const generateUniqueFileName = (extension) => { //generuje náhodné jméno souboru
         const timestamp = Date.now();
         const randomString = Math.random().toString(36).substring(2, 8);
         return `file_${timestamp}_${randomString}.${extension}`;
@@ -89,18 +93,22 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
         }
     };
 
-    const CreateEditFoto = ({ textButton }) => {
+    const CreateEditFoto = ({ url, text }) => {
         const idInput = `fotkyInput${fotky[index]?.id ?? `${Date.now()}-${Math.random()}`}`;
         return (
           <div>
             <input id={idInput} type="file" onChange={handleFotkyChange} style={{ display: 'none' }} multiple />
-            <button type="button" onClick={() => { document.getElementById(idInput).click(); }} > {textButton} </button>
+            { url === undefined ? <button type="button" onClick={() => { document.getElementById(idInput).click(); }} > {text} </button>:
+                <a href="/" onClick={(e) => { e.preventDefault(); document.getElementById(idInput).click(); }}>
+                    <img src={url} alt={text ?? ""} width="70" />
+                </a>
+            }
           </div>
         );
     };
 
     if (index === undefined) {  // není index, tak bude jen tlačítko pro přidání fotek
-        return (<CreateEditFoto textButton="Přidej fotky" />);
+        return (<CreateEditFoto text="Přidej fotky" />);
     }
 
     if (edit || !(fotky[index].id)) { // pokud je povolen edit nebo fotografie není vytvořená dojde k úpravě a případnému vytvoření 
@@ -110,8 +118,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
                     <h3>{fotky[index].id ? 'Upravit' : 'Vytvořit'}</h3>
                     
                     <div>
-                        <img src={fotky[index].tempUrl ?? fotky[index].url} alt={fotky[index].tempPopis ?? fotky[index].popis ?? ""} width="70" />
-                        <div>Popis fotky:</div>
+                        <CreateEditFoto url={fotky[index].tempUrl ?? fotky[index].url} text={fotky[index].tempPopis ?? fotky[index].popis} />                     <div>Popis fotky:</div>
                         <input
                             type="text"
                             value={fotky[index].tempPopis ?? fotky[index].popis ?? ""}
@@ -125,7 +132,6 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
                     </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '20px' }}>
-                    <CreateEditFoto textButton="Vybrat fotku" />
                     <button type="button" onClick={handleSave}>Uložit</button>
                     <button type="button" onClick={handleCancel}>Storno</button>
                     {fotky[index].id && <button type="button" onClick={handleDelete}>Smazat</button>}
@@ -139,7 +145,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
                     <a href="/" onClick={(e) => { e.preventDefault(); setEdit(true); }}>
                         <img src={fotky[index].url} alt={fotky[index].popis} width="100" />
                     </a>
-                    <div>Popis fotky: {fotky[index].popis}</div>
+                    <div>{fotky[index].popis}</div>
                 </div>
             </div>
         );

@@ -11,9 +11,8 @@ const ZajezdForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (id) {
+    if (id) { // Načtení dat zájezdů pro úpravu
       setLoading(true);
-      // Načtení dat zájezdů pro úpravu
       fetch(`/api/zajezd/${id}`)
         .then((response) => {
           if (!response.ok) {
@@ -27,19 +26,6 @@ const ZajezdForm = () => {
         })
         .catch((error) => console.error(error.message))
         .finally(() => setLoading(false));
-      //nacteni fotek
-      /*fetch(`/api/fotografie/zajezd/${id}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Chyba při načítání fotek');
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setFotky(data);
-        })
-        .catch((error) => console.error(error.message))
-        .finally(() => setLoading(false));*/
     }
   }, [id]);
 
@@ -126,12 +112,11 @@ const ZajezdForm = () => {
           </div>
         </div>
         <div>
-          <h2>Fotografie:</h2>
-          <div><h3>Přidat fotky:</h3><Fotografie fotky={fotky} setFotky={setFotky} zajezdId={id} /> </div>
+          <div><h3>Fotografie</h3><Fotografie fotky={fotky} setFotky={setFotky} zajezdId={id} /> </div>
           <div className="fotogalerie">
             {fotky.map((fotka, index) => (
               <div key={index}>
-                <Fotografie index={index} fotky={fotky} setFotky={setFotky} zajezdId={id} />
+                <Fotografie index={index} fotky={fotky} setFotky={setFotky} />
               </div>
             ))}
           </div>
