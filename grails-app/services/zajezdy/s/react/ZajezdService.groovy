@@ -5,6 +5,16 @@ import org.springframework.web.multipart.MultipartFile
 
 @Transactional
 class ZajezdService {
+    FotografieService fotografieService
+
+    def delete(Long id) {
+        Zajezd zajezd = Zajezd.get(id)
+        if (zajezd) {
+            zajezd.fotky.each { fotka ->
+                fotografieService.delete(fotka.id)
+            }
+        }
+    }
 
     def index() {
         return Zajezd.list().collect { zajezd ->

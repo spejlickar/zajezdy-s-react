@@ -83,7 +83,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
                 };
                 setFotky(updatedFotky);
             } else { //přidání nových fotek
-                setFotky([...fotky, ...Array.from(files).map((file) => ({ file, tempUrl: URL.createObjectURL(file), tempPopis: "", zajezd: { id: zajezdId } }))]);
+                setFotky([...Array.from(files).map((file) => ({ file, tempUrl: URL.createObjectURL(file), tempPopis: "", zajezd: { id: zajezdId } })), ...fotky]);
             }
         }
     };

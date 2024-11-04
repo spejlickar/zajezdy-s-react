@@ -10,8 +10,15 @@ class ZajezdController extends RestfulController {
     def fileUploadService
     ZajezdService zajezdService
 
+
     ZajezdController() {
         super(Zajezd)
+    }
+
+    @Override
+    def delete() {
+        zajezdService.delete(params.id as Long)
+        super.delete()
     }
 
     /*@Override
@@ -32,7 +39,7 @@ class ZajezdController extends RestfulController {
         respond zajezdService.update(params.id as Long,params)
     }*/
 
-    def uploadFotky(Long id) {
+   /* def uploadFotky(Long id) {
         def zajezd = Zajezd.get(id)
         if (!zajezd) {
             render status: 404, text: 'Zájezd nenalezen'
@@ -51,5 +58,5 @@ class ZajezdController extends RestfulController {
         } else {
             respond zajezd.errors, [status: 400]
         }
-    }
+    }*/
 }
