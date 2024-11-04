@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <asset:stylesheet src="bootstrap.min" />
-    <g:layoutHead />
+
 </head>
 <body>
     <div class="container-fluid" style="padding-top: 20px; max-width: 1200px; margin: 0 auto;">
