@@ -1,13 +1,5 @@
 import React from "react";
-//import 'bootstrap/dist/css/bootstrap.min.css';
-import {
-  BrowserRouter as Router,
-  Link,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
-
+import { BrowserRouter as Router, Link, Route, Routes, Navigate } from "react-router-dom";
 import ZajezdForm from './ZajezdForm';
 import ZajezdIndex from './ZajezdIndex';
 
@@ -28,8 +20,6 @@ const App = () => (
           </li>
         </ul>
       </nav>
-
-      
         <Routes>
           <Route path="home/spravce" element={<Navigate to={"/zajezdy"} />} />
           <Route path="/zajezdy" element={<ZajezdIndex />} />

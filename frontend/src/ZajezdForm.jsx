@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import debounce from 'lodash.debounce';
-
 import Fotografie from './Fotografie';
 
 const ZajezdForm = () => {
@@ -24,11 +23,12 @@ const ZajezdForm = () => {
         })
         .then((data) => {
           setZajezd(data);
+          setFotky(data.fotky);
         })
         .catch((error) => console.error(error.message))
         .finally(() => setLoading(false));
       //nacteni fotek
-      fetch(`/api/fotografie/zajezd/${id}`)
+      /*fetch(`/api/fotografie/zajezd/${id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Chyba při načítání fotek');
@@ -39,7 +39,7 @@ const ZajezdForm = () => {
           setFotky(data);
         })
         .catch((error) => console.error(error.message))
-        .finally(() => setLoading(false));
+        .finally(() => setLoading(false));*/
     }
   }, [id]);
 

@@ -25,6 +25,8 @@ class FotografieService {
     def getFotografieByIdZajezd(Long id) {
         return Fotografie.findAllByZajezd(Zajezd.get(id))
     }
+
+    //vymaže fotografii dle id pokud existuje
     def delete(Long id){
         Fotografie fotografie = Fotografie.get(id)
         String rootPath = System.getProperty("user.dir") + File.separator + "grails-app"
@@ -56,7 +58,6 @@ class FotografieService {
                     }
                 }
             }
-
             // uloží novou fotku
             fotografie.url = data.url  // uloží případně nové url
             Path newTargetPath = Paths.get(rootPath, fotografie.url)

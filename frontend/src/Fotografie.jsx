@@ -79,7 +79,8 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
                 updatedFotky[index] = {
                     ...updatedFotky[index],
                     file: files[0],
-                    tempUrl: URL.createObjectURL(files[0])
+                    tempUrl: URL.createObjectURL(files[0]),
+                    tempPopis: updatedFotky[index].popis
                 };
                 setFotky(updatedFotky);
             } else { //přidání nových fotek

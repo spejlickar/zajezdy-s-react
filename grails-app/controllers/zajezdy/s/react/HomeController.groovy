@@ -8,8 +8,8 @@ class HomeController {
         [zajezdy: zajezdy]
     }
 
-    def show(Long id) {
-        def zajezd = Zajezd.get(id)
+    def show() {
+        def zajezd = Zajezd.get(params.id)
         if (!zajezd) {
             flash.message = "Zájezd nenalezen"
             redirect(action: "index")

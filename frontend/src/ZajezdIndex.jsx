@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-//const API_URL = "/api"//"http://localhost:8080/api";
+import { useNavigate } from 'react-router-dom';
 
 const ZajezdIndex = () => {
   const [zajezdy, setZajezdy] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Načtení všech zájezdů z API (nebo z lokálního úložiště)
@@ -46,7 +46,7 @@ const ZajezdIndex = () => {
               <td>{zajezd.nazev}</td>
               <td>{zajezd.popis}</td>
               <td>
-                <Link to={`/uprav/${zajezd.id}`}>Upravit</Link>
+                <button onClick={() => navigate(`/uprav/${zajezd.id}`)}>Upravit</button>
                 <button onClick={() => handleDelete(zajezd.id)}>Smazat</button>
               </td>
             </tr>

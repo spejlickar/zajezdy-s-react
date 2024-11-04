@@ -13,14 +13,12 @@ class FotografieController extends RestfulController {
         super(Fotografie)
     }
 
-    // odešle všechny fotografie dle id zájezdu
-    def getFotografieByIdZajezd(){
+    def getFotografieByIdZajezd(){ // odešle všechny fotografie dle id zájezdu
         respond fotografieService.getFotografieByIdZajezd(params.id as Long)
     }
 
-    // odešle soubor fotografie dle id fotografie
     @Get
-    def getFile(String fileName){
+    def getFile(String fileName){ // odešle soubor fotografie dle nazvu fotografie
         def result = fotografieService.getFileByIdFotografie(fileName)
         if (result.status == 404) {
             render status: 404, text: result.message
@@ -33,20 +31,18 @@ class FotografieController extends RestfulController {
         response.outputStream.flush()
     }
 
-    //uloží novou fotku do fotografie dle id
     @Override
-    def save() {
-        respond fotografieService.save(request.getFile('file'),request.getParameter("fotografie"))
-    }
-
-    //uloží změny fotografie dle id
-    @Override
-    def update() {
+    def save() { //uloží novou fotku do fotografie dle id
         respond fotografieService.save(request.getFile('file'),request.getParameter("fotografie"))
     }
 
     @Override
-    def delete(){
+    def update() { //uloží změny fotografie dle id
+        respond fotografieService.save(request.getFile('file'),request.getParameter("fotografie"))
+    }
+
+    @Override
+    def delete(){ //vymaže fotografii dle id
         fotografieService.delete(params.id as Long)
         super.delete()
     }
