@@ -5,9 +5,7 @@
     <title>${zajezd.nazev}</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <asset:javascript src="jquery-3.5.1.min" />
-    <asset:javascript src="popper.min" />
-    <asset:javascript src="bootstrap.min" />
+
 </head>
 <body>
     <div class="container-fluid" style="padding-top: 20px; max-width: 1200px; margin: 0 auto;">

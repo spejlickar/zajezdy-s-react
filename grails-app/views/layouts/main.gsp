@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <asset:stylesheet src="bootstrap.min" />
-    <asset:stylesheet src="styles.css" /> <!-- Custom stylesheet -->
+    <asset:stylesheet src="styles.css" /> <!-- uživatelské styly -->
+    <asset:javascript src="jquery-3.5.1.min" />
+    <asset:javascript src="bootstrap.bundle.min" />
     <g:layoutHead />
 </head>
 <body>
