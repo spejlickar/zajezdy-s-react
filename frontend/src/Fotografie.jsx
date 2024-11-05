@@ -4,11 +4,17 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
     const [edit, setEdit] = useState(false);  // stav fotografie upravovana/NEuprovaná (výchozí stav NEuprovaná)
 
     useEffect(() => {
-        console.log("fantomas");
-        if ((index !== undefined) && (fotky[index].id === undefined) ) {
-            console.log("fantomas ha ha");
-            handleSave();
+        console.log(`useEffect_index: ${(index !== undefined)}`);
+        console.log(fotky[index])
+        if (!(index === undefined)) {
+            console.log(`useEffect_id: ${!(fotky[index].id)}`);
+            if ((fotky[index].id === undefined) ) {
+                console.log("fantomas ha ha");
+                handleSave();
+                
+            }
         }
+    
     }, []);
     
 
@@ -84,8 +90,8 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
         const files = e.target.files;
         if (files) { 
             if (index !== undefined) {   //klasická úprava fotky
-                setFotky((prevFotky) => {
-                    const updatedFotky = [...prevFotky];
+                setFotky(() => {
+                    const updatedFotky = [...fotky];
                     updatedFotky[index] = {
                         ...updatedFotky[index],
                         file: files[0],
@@ -95,9 +101,9 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
                     return updatedFotky;
                 });
             } else { //přidání nových fotek
-                setFotky((prevFotky) => [
-                    ...Array.from(files).map((file) => ({ id: undefined, file, tempUrl: URL.createObjectURL(file), tempPopis: "", zajezd: { id: zajezdId } })),
-                    ...prevFotky
+                setFotky(() => [
+                    ...Array.from(files).map((file) => ({file, tempUrl: URL.createObjectURL(file), tempPopis: "", zajezd: { id: zajezdId } })),
+                    ...fotky
                 ]);
             }
         }
@@ -121,6 +127,10 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
 
     if (index === undefined) {  // není index, tak bude jen tlačítko pro přidání fotek
         return (<CreateEditFoto text="Přidej fotky" />);
+    } 
+
+    if ((fotky[index].id === undefined)) {
+        return (<div>Načitám</div>);
     }
 
     if (edit || !(fotky[index]?.id)) { // pokud je povolen edit nebo fotografie není vytvořená dojde k úpravě a případnému vytvoření 
