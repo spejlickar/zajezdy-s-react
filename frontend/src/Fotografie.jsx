@@ -3,9 +3,14 @@ import React, { useEffect, useState } from 'react';
 const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
     const [edit, setEdit] = useState(false);  // stav fotografie upravovana/NEuprovaná (výchozí stav NEuprovaná)
 
-    useEffect(() => { // Spustí jen jednou při vytvoření komponenty
-        if (index) { if (fotky[index].id === undefined) {handleSave();}}
-    }, []); 
+    useEffect(() => {
+        console.log("fantomas");
+        if ((index !== undefined) && (fotky[index].id === undefined) ) {
+            console.log("fantomas ha ha");
+            handleSave();
+        }
+    }, []);
+    
 
     const generateUniqueFileName = (extension) => { //generuje náhodné jméno souboru
         const timestamp = Date.now();
@@ -15,7 +20,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
 
     const handleSave = async () => {
         const formData = new FormData(); // příprava dat k poslání
-        if (fotky[index].file) { //je vybrana nová fotka
+        if (fotky[index]?.file) { //je vybrana nová fotka
             formData.append('file', fotky[index].file); // přiložení nové fotky
             fotky[index].url = "/fotogalerie/" + generateUniqueFileName(fotky[index].file.name.split('.').pop());  // vygenerování nové url
         }
@@ -32,7 +37,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
             if (response.ok) {
                 const result = await response.json();
                 setEdit(false); // stav bez editace
-                setFotky([...fotky.slice(0, index), result, ...fotky.slice(index + 1)]); //do pole dána uložená fotografie
+                setFotky((prevFotky) => [...prevFotky.slice(0, index), result, ...prevFotky.slice(index + 1)]); //do pole dána uložená fotografie
             } else if (response.status === 404) {
                 alert("Chyba: Server nenašel požadovanou cestu. Zkontrolujte URL.");
             } else {
@@ -45,7 +50,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
     };
 
     const deleteItemFromFotky = (i) => {  
-        setFotky([...fotky.slice(0, i), ...fotky.slice(i + 1)]); //vymaže fotografii z pole fotky
+        setFotky((prevFotky) => [...prevFotky.slice(0, i), ...prevFotky.slice(i + 1)]); //vymaže fotografii z pole fotky
     };
 
     const handleDelete = async () => { //vymaže fotografii z databaze a pak i z pole (fotografie má id - jinak nikdy nedojde k této události)
@@ -68,7 +73,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
     };
 
     const handleCancel = () => {  //stornování úpravy fotky
-        if (fotky[index].id) { //pokud existuje id fotografie (je uložená v databazi)
+        if (fotky[index]?.id) { //pokud existuje id fotografie (je uložená v databazi)
             setEdit(false);  //jen změna stavu fotografie na NEeditovaná
         } else {  //pokud NEexistuje id fotografie (NENÍ uložená v databazi)
             deleteItemFromFotky(index); //vymaže fotografie z pole
@@ -79,16 +84,21 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
         const files = e.target.files;
         if (files) { 
             if (index !== undefined) {   //klasická úprava fotky
-                const updatedFotky = [...fotky];
-                updatedFotky[index] = {
-                    ...updatedFotky[index],
-                    file: files[0],
-                    tempUrl: URL.createObjectURL(files[0]),
-                    tempPopis: updatedFotky[index].popis
-                };
-                setFotky(updatedFotky);
+                setFotky((prevFotky) => {
+                    const updatedFotky = [...prevFotky];
+                    updatedFotky[index] = {
+                        ...updatedFotky[index],
+                        file: files[0],
+                        tempUrl: URL.createObjectURL(files[0]),
+                        tempPopis: updatedFotky[index].popis
+                    };
+                    return updatedFotky;
+                });
             } else { //přidání nových fotek
-                setFotky([...Array.from(files).map((file) => ({ file, tempUrl: URL.createObjectURL(file), tempPopis: "", zajezd: { id: zajezdId } })), ...fotky]);
+                setFotky((prevFotky) => [
+                    ...Array.from(files).map((file) => ({ id: undefined, file, tempUrl: URL.createObjectURL(file), tempPopis: "", zajezd: { id: zajezdId } })),
+                    ...prevFotky
+                ]);
             }
         }
     };
@@ -98,7 +108,9 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
         return (
           <div>
             <input id={idInput} type="file" onChange={handleFotkyChange} style={{ display: 'none' }} multiple />
-            { url === undefined ? <button type="button" onClick={() => { document.getElementById(idInput).click(); }} > {text} </button>:
+            { (url === undefined) ? 
+                <button type="button" onClick={() => { document.getElementById(idInput).click(); }} > {text} </button>
+                :
                 <a href="/" onClick={(e) => { e.preventDefault(); document.getElementById(idInput).click(); }}>
                     <img src={url} alt={text ?? ""} width="70" />
                 </a>
@@ -111,21 +123,24 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
         return (<CreateEditFoto text="Přidej fotky" />);
     }
 
-    if (edit || !(fotky[index].id)) { // pokud je povolen edit nebo fotografie není vytvořená dojde k úpravě a případnému vytvoření 
+    if (edit || !(fotky[index]?.id)) { // pokud je povolen edit nebo fotografie není vytvořená dojde k úpravě a případnému vytvoření 
         return (
             <div style={{ display: 'flex' }}>
                 <div>
-                    <h3>{fotky[index].id ? 'Upravit' : 'Vytvořit'}</h3>
+                    <h3>{fotky[index]?.id ? 'Upravit' : 'Vytvořit'}</h3>
                     
                     <div>
-                        <CreateEditFoto url={fotky[index].tempUrl ?? fotky[index].url} text={fotky[index].tempPopis ?? fotky[index].popis} />                     <div>Popis fotky:</div>
+                        <CreateEditFoto url={fotky[index]?.tempUrl ?? fotky[index]?.url} text={fotky[index]?.tempPopis ?? fotky[index]?.popis} />
+                        <div>Popis fotky:</div>
                         <input
                             type="text"
-                            value={fotky[index].tempPopis ?? fotky[index].popis ?? ""}
+                            value={fotky[index]?.tempPopis ?? fotky[index]?.popis ?? ""}
                             onChange={(e) => {
-                                const updatedFotky = [...fotky];
-                                updatedFotky[index].tempPopis = e.target.value;
-                                setFotky(updatedFotky);
+                                setFotky((prevFotky) => {
+                                    const updatedFotky = [...prevFotky];
+                                    updatedFotky[index].tempPopis = e.target.value;
+                                    return updatedFotky;
+                                });
                             }}
                             required
                          />
@@ -134,7 +149,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '20px' }}>
                     <button type="button" onClick={handleSave}>Uložit</button>
                     <button type="button" onClick={handleCancel}>Storno</button>
-                    {fotky[index].id && <button type="button" onClick={handleDelete}>Smazat</button>}
+                    {fotky[index]?.id && <button type="button" onClick={handleDelete}>Smazat</button>}
                 </div>
             </div>
         );
@@ -143,9 +158,9 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
             <div>
                 <div>
                     <a href="/" onClick={(e) => { e.preventDefault(); setEdit(true); }}>
-                        <img src={fotky[index].url} alt={fotky[index].popis} width="100" />
+                        <img src={fotky[index]?.url} alt={fotky[index]?.popis} width="100" />
                     </a>
-                    <div>{fotky[index].popis}</div>
+                    <div>{fotky[index]?.popis}</div>
                 </div>
             </div>
         );
