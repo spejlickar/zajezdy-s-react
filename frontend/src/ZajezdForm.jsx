@@ -113,17 +113,50 @@ const ZajezdForm = () => {
         </div>
         <div>
           <div><h3>Fotografie</h3><Fotografie fotky={fotky} setFotky={setFotky} zajezdId={id} /> </div>
-          <div className="fotogalerie">
-            {fotky.map((fotka, index) => (
-              <div key={index}>
-                <Fotografie index={index} fotky={fotky} setFotky={setFotky} />
-              </div>
-            ))}
-          </div>
+          <div className="container mt-4">
+          {
+                    (
+                        () => {
+                            let li = [];
+                            let lines = 10
+                            while (lines > 0) {
+                                li.push(<div key={lines}>ha ha</div>)
+                                lines --
+                            }
+                            return li
+                        }
+                    )()
+                }
+
+          
+              
+          
+              
+              
+              
+        
+        </div>
         </div>
       </div>
     );
   }
 };
-
+/*
+resultY += (<div class="row">
+                  {()=>{
+                    countColumn=0;
+                    const resultX = (<></>);
+                    while ((count < countMax) && (countColumn++ < 3)) {
+                    resultX +=  (<div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card">
+                            <img file={fotky[count].url} class="card-img-top" alt={fotky[count].popis} />
+                          <div class="card-body">
+                            <div>{fotky[count].popis}</div>
+                          </div>
+                        </div>
+                    </div>)
+                  }
+                  return resultX;
+                }}
+                </div>)*/ 
 export default ZajezdForm;
