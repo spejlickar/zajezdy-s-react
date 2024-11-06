@@ -33,8 +33,8 @@
         <g:layoutBody />
     </div>
 
-    <asset:javascript src="jquery-3.5.1.min.js" />
-    <asset:javascript src="popper.min.js" />
-    <asset:javascript src="bootstrap.bundle.min.js" />
+    <asset:javascript src="jquery-3.5.1.min.js" type="text/javascript" />
+    <asset:javascript src="popper.min.js" type="text/javascript" />
+    <asset:javascript src="bootstrap.bundle.min.js" type="text/javascript" />
 </body>
 </html>

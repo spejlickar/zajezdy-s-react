@@ -2,29 +2,23 @@ import React, { useEffect, useState } from 'react';
 
 const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
     const [edit, setEdit] = useState(false);  // stav fotografie upravovana/NEuprovaná (výchozí stav NEuprovaná)
-
-    useEffect(() => {
-        console.log(`useEffect_index: ${(index !== undefined)}`);
-        console.log(fotky[index])
-        if (!(index === undefined)) {
-            console.log(`useEffect_id: ${!(fotky[index].id)}`);
-            if ((fotky[index].id === undefined) ) {
-                console.log("fantomas ha ha");
-                handleSave();
-                
+    
+    if (index !== undefined) { // useEffect se vytvoří jen pro fotografie (NE pro tlačítko "přidat fotografie")
+        useEffect(() => { //vytvoření useEffect
+            if ((fotky[index].id === undefined) ) { // v případě neuložené fotografie (id == undefined), tak jí rovnou uloží
+                handleSave(); //uloží foto
             }
-        }
+        }, [fotky[index].id]); //useEffect spouští změna id (případné přidání, změna pořadí fotek...)
+    }
     
-    }, []);
-    
-
     const generateUniqueFileName = (extension) => { //generuje náhodné jméno souboru
         const timestamp = Date.now();
         const randomString = Math.random().toString(36).substring(2, 8);
         return `file_${timestamp}_${randomString}.${extension}`;
     };
 
-    const handleSave = async () => {
+    const handleSave = async () => { //uloží fotografii do databáze na základě atributů file a tempPopis 
+        //(url si vygeneru novy, pokud file NEexistuje, provede aktualizaci jen atributu popis)
         const formData = new FormData(); // příprava dat k poslání
         if (fotky[index]?.file) { //je vybrana nová fotka
             formData.append('file', fotky[index].file); // přiložení nové fotky
@@ -102,7 +96,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
                 });
             } else { //přidání nových fotek
                 setFotky(() => [
-                    ...Array.from(files).map((file) => ({file, tempUrl: URL.createObjectURL(file), tempPopis: "", zajezd: { id: zajezdId } })),
+                    ...Array.from(files).map((file) => ({id:undefined ,file, tempUrl: URL.createObjectURL(file), tempPopis: "", zajezd: { id: zajezdId } })),
                     ...fotky
                 ]);
             }
