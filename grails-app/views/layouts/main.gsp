@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <asset:stylesheet src="styles.css" /> <!-- uzivatelske styly -->
     <asset:stylesheet src="bootstrap.min.css" />
+    <asset:stylesheet src="styles.css" /> <!-- uzivatelske styly -->
 
     <g:layoutHead />
 </head>

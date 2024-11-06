@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
-    const [edit, setEdit] = useState(false);  // stav fotografie upravovana/NEuprovaná (výchozí stav NEuprovaná)
     
     if (index !== undefined) { // useEffect se vytvoří jen pro fotografie (NE pro tlačítko "přidat fotografie")
         useEffect(() => { //vytvoření useEffect
@@ -25,7 +24,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
             fotky[index].url = "/fotogalerie/" + generateUniqueFileName(fotky[index].file.name.split('.').pop());  // vygenerování nové url
         }
         fotky[index].popis = fotky[index].tempPopis; //vložení nového popisu
-        const { file, tempUrl, tempPopis, ...cleanFotografie } = fotky[index]; //separace nežádoucích atributů co se nemají posílat
+        const { file, tempUrl, tempPopis, edit, ...cleanFotografie } = fotky[index]; //separace nežádoucích atributů co se nemají posílat
         formData.append('fotografie', JSON.stringify(cleanFotografie)); //přiložení objektu Fotografie bez nežádoucích atributů
         
         try {
@@ -36,7 +35,6 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
 
             if (response.ok) {
                 const result = await response.json();
-                setEdit(false); // stav bez editace
                 setFotky((prevFotky) => [...prevFotky.slice(0, index), result, ...prevFotky.slice(index + 1)]); //do pole dána uložená fotografie
             } else if (response.status === 404) {
                 alert("Chyba: Server nenašel požadovanou cestu. Zkontrolujte URL.");
@@ -74,7 +72,12 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
 
     const handleCancel = () => {  //stornování úpravy fotky
         if (fotky[index]?.id) { //pokud existuje id fotografie (je uložená v databazi)
-            setEdit(false);  //jen změna stavu fotografie na NEeditovaná
+            setFotky(prevFotky => { //vymaz atributu "edit" z objektu fotky[index]
+                const newFotky = [...prevFotky];
+                const { edit, ...updatedFotka } = newFotky[index];
+                newFotky[index] = updatedFotka;
+                return newFotky;
+              });
         } else {  //pokud NEexistuje id fotografie (NENÍ uložená v databazi)
             deleteItemFromFotky(index); //vymaže fotografie z pole
         }
@@ -84,8 +87,8 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
         const files = e.target.files;
         if (files) { 
             if (index !== undefined) {   //klasická úprava fotky
-                setFotky(() => {
-                    const updatedFotky = [...fotky];
+                setFotky((prevFotky) => {
+                    const updatedFotky = [...prevFotky];
                     updatedFotky[index] = {
                         ...updatedFotky[index],
                         file: files[0],
@@ -95,9 +98,9 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
                     return updatedFotky;
                 });
             } else { //přidání nových fotek
-                setFotky(() => [
+                setFotky((prevFotky) => [
                     ...Array.from(files).map((file) => ({id:undefined ,file, tempUrl: URL.createObjectURL(file), tempPopis: "", zajezd: { id: zajezdId } })),
-                    ...fotky
+                    ...prevFotky
                 ]);
             }
         }
@@ -127,7 +130,7 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
         return (<div>Načitám</div>);
     }
 
-    if (edit || !(fotky[index]?.id)) { // pokud je povolen edit nebo fotografie není vytvořená dojde k úpravě a případnému vytvoření 
+    if (fotky[index].edit !== undefined) { // pokud je povolen edit dojde k úpravě
         return (
             <div style={{ display: 'flex' }}>
                 <div>
@@ -161,7 +164,14 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
         return (
             <div>
                 <div>
-                    <a href="/" onClick={(e) => { e.preventDefault(); setEdit(true); }}>
+                    <a href="/" onClick={(e) => { e.preventDefault(); setFotky((prevFotky) => {
+                        const updatedFotky = [...prevFotky];
+                        updatedFotky[index] = {
+                            ...updatedFotky[index],
+                            edit: true
+                        };
+                        return updatedFotky;
+                        }); }}>
                         <img src={fotky[index]?.url} alt={fotky[index]?.popis} width="100" />
                     </a>
                     <div>{fotky[index]?.popis}</div>
