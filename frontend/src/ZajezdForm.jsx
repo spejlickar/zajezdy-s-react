@@ -83,6 +83,20 @@ const ZajezdForm = () => {
       </div>
     );
   } else {
+    let fotogalerie = [];
+    let fotogalerieRow = [];
+    fotky.forEach((fotka, index) => {
+      fotogalerieRow.push(<div className="col-lg-4 col-md-6 mb-4" key={fotka.id}>
+                            <div className="card">
+                              <Fotografie index={index} fotky={fotky} setFotky={setFotky} zajezdId={id} />
+                            </div>
+                          </div>);
+      if ((resultRow.length()  >= 3) || (index >= (fotky.length -1))) {
+        fotogalerie.push(<div key={fotka.id + "row"} class="row">{fotogalerieRow.splice(0,fotogalerieRow.length())}</div>);
+        //fotogalerieRow = [];
+      }
+    });
+
     return (
       <div>
         <div>
@@ -112,51 +126,12 @@ const ZajezdForm = () => {
           </div>
         </div>
         <div>
-          <div><h3>Fotografie</h3><Fotografie fotky={fotky} setFotky={setFotky} zajezdId={id} /> </div>
-          <div className="container mt-4">
-          {
-                    (
-                        () => {
-                            let li = [];
-                            let lines = 10
-                            while (lines > 0) {
-                                li.push(<div key={lines}>ha ha</div>)
-                                lines --
-                            }
-                            return li
-                        }
-                    )()
-                }
-
-          
-              
-          
-              
-              
-              
-        
-        </div>
+          <div><h3>Fotografie</h3><Fotografie fotky={fotky} setFotky={setFotky} /> </div>
+          <div className="container mt-4">{fotogalerie}</div>
         </div>
       </div>
     );
   }
 };
-/*
-resultY += (<div class="row">
-                  {()=>{
-                    countColumn=0;
-                    const resultX = (<></>);
-                    while ((count < countMax) && (countColumn++ < 3)) {
-                    resultX +=  (<div class="col-lg-4 col-md-6 mb-4">
-                        <div class="card">
-                            <img file={fotky[count].url} class="card-img-top" alt={fotky[count].popis} />
-                          <div class="card-body">
-                            <div>{fotky[count].popis}</div>
-                          </div>
-                        </div>
-                    </div>)
-                  }
-                  return resultX;
-                }}
-                </div>)*/ 
+
 export default ZajezdForm;
