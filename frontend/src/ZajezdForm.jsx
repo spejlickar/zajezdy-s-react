@@ -44,7 +44,7 @@ const ZajezdForm = () => {
 
         if (response.ok) {
           const result = await response.json();
-          if (id) { //došlo jen k upravě stavajícího zajezdu
+          if (id) { //došlo jen k úpravě stávajícího zájezdu
             console.log(result);
             setZajezd(result);
           } else { //došlo k vytvoření nového zájezdu
@@ -86,14 +86,14 @@ const ZajezdForm = () => {
     let fotogalerie = [];
     let fotogalerieRow = [];
     fotky.forEach((fotka, index) => {
-      fotogalerieRow.push(<div className="col-lg-4 col-md-6 mb-4" key={fotka.id}>
+      fotogalerieRow.push(<div className="col-lg-4 col-md-6 mb-4" key={`fotka-${fotka.id}-${index}`}>
                             <div className="card">
                               <Fotografie index={index} fotky={fotky} setFotky={setFotky} zajezdId={id} />
                             </div>
                           </div>);
-      if ((resultRow.length()  >= 3) || (index >= (fotky.length -1))) {
-        fotogalerie.push(<div key={fotka.id + "row"} class="row">{fotogalerieRow.splice(0,fotogalerieRow.length())}</div>);
-        //fotogalerieRow = [];
+      if ((fotogalerieRow.length >= 3) || (index >= (fotky.length - 1))) {
+        fotogalerie.push(<div key={`fotogalerie-row-${index}`} className="row">{[...fotogalerieRow]}</div>);
+        fotogalerieRow = [];
       }
     });
 
