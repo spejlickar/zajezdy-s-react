@@ -83,19 +83,20 @@ const ZajezdForm = () => {
       </div>
     );
   } else {
-    let fotogalerie = [];
-    let fotogalerieRow = [];
-    fotky.forEach((fotka, index) => {
-      fotogalerieRow.push(<div className="col-lg-4 col-md-6 mb-4" key={`fotka-${fotka.id}-${index}`}>
-                            <div className="card">
-                              <Fotografie index={index} fotky={fotky} setFotky={setFotky} zajezdId={id} />
-                            </div>
-                          </div>);
-      if ((fotogalerieRow.length >= 3) || (index >= (fotky.length - 1))) {
-        fotogalerie.push(<div key={`fotogalerie-row-${index}`} className="row">{[...fotogalerieRow]}</div>);
-        fotogalerieRow = [];
-      }
-    });
+    //let fotogalerie = [];
+   //let fotogalerieRow = [];
+    //<div className="container mt-4">{fotogalerie}</div>
+    //fotky.forEach((fotka, index) => {
+      //fotogalerieRow.push(<div className="col-lg-4 col-md-6 mb-4" key={`fotka-${fotka.id}-${index}`}>
+                     //       <div className="card">
+                     //         <Fotografie index={index} fotky={fotky} setFotky={setFotky} zajezdId={id} />
+                      //      </div>
+                      //    </div>);
+      //if ((fotogalerieRow.length >= 3) || (index >= (fotky.length - 1))) {
+     //   fotogalerie.push(<div key={`fotogalerie-row-${index}`} className="row">{[...fotogalerieRow]}</div>);
+     //   fotogalerieRow = [];
+     // }
+   // });
 
     return (
       <div>
@@ -126,8 +127,13 @@ const ZajezdForm = () => {
           </div>
         </div>
         <div>
-          <div><h3>Fotografie</h3><Fotografie fotky={fotky} setFotky={setFotky} /> </div>
-          <div className="container mt-4">{fotogalerie}</div>
+          <div><h3>Fotografie</h3><Fotografie fotky={fotky} setFotky={setFotky} zajezdId={id}/> </div>
+         <div>
+         {fotky.map((fotka, i) => (
+              <Fotografie key={`fotka-${fotka.id}-${i}`} index={i} fotky={fotky} setFotky={setFotky} zajezdId={id} />
+            ))}
+        
+          </div>
         </div>
       </div>
     );
