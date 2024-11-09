@@ -30,14 +30,14 @@ const ZajezdIndex = () => {
   };
 
   return (
-    <div>
-      <h1>Seznam zájezdů</h1>
-      <table>
-        <thead>
+    <div className="container mt-5">
+      <h1 className="text-center mb-4">Seznam zájezdů</h1>
+      <table className="table table-striped table-bordered">
+        <thead className="thead-dark">
           <tr>
-            <th>Název</th>
-            <th>Popis</th>
-            <th>Akce</th>
+            <th scope="col">Název</th>
+            <th scope="col">Popis</th>
+            <th scope="col">Akce</th>
           </tr>
         </thead>
         <tbody>
@@ -46,8 +46,8 @@ const ZajezdIndex = () => {
               <td>{zajezd.nazev}</td>
               <td>{zajezd.popis}</td>
               <td>
-                <button onClick={() => navigate(`/uprav/${zajezd.id}`)}>Upravit</button>
-                <button onClick={() => handleDelete(zajezd.id)}>Smazat</button>
+                <button className="btn btn-primary mr-2" onClick={() => navigate(`/uprav/${zajezd.id}`)}>Upravit</button>
+                <button className="btn btn-danger" onClick={() => handleDelete(zajezd.id)}>Smazat</button>
               </td>
             </tr>
           ))}

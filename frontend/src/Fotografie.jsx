@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
+
 const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
     
     if (index !== undefined) { // useEffect se vytvoří jen pro fotografie (NE pro tlačítko "přidat fotografie")
@@ -106,16 +107,16 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
         }
     };
 
-    const CreateEditFoto = ({ url, text }) => {
+    const CreateEditFoto = ({ url, text }) => { //komponenta pro změnu/přidání nových fotek (pokud je uvedený "url" fotky, tak vytvoří fotku s odkazem, jinak tlačítko s "text")
         const idInput = `fotkyInput${fotky[index]?.id ?? `${Date.now()}-${Math.random()}`}`;
         return (
-          <div>
-            <input id={idInput} type="file" onChange={handleFotkyChange} style={{ display: 'none' }} multiple />
+          <div className="d-flex flex-column align-items-center">
+            <input id={idInput} type="file" onChange={handleFotkyChange} className="form-control-file d-none" multiple />
             { (url === undefined) ? 
-                <button type="button" onClick={() => { document.getElementById(idInput).click(); }} > {text} </button>
+                <button type="button" className="btn btn-primary mt-2" onClick={() => { document.getElementById(idInput).click(); }} > {text} </button>
                 :
                 <a href="/" onClick={(e) => { e.preventDefault(); document.getElementById(idInput).click(); }}>
-                    <img src={url} alt={text ?? ""} width="70" />
+                    <img src={url} alt={text ?? ""} className="img-thumbnail mt-2" width="70" />
                 </a>
             }
           </div>
@@ -126,57 +127,60 @@ const Fotografie = ({ index, fotky, setFotky, zajezdId }) => {
         return (<CreateEditFoto text="Přidej fotky" />);
     } 
 
-    if ((fotky[index].id === undefined)) {
-        return (<div>Načitám</div>);
+    if ((fotky[index].id === undefined)) {  //čekání na uložení fotky do databáze
+        return (<div className="text-center">Načítám...</div>);
     }
 
     if (fotky[index].edit !== undefined) { // pokud je povolen edit dojde k úpravě
         return (
-            <div style={{ display: 'flex' }}>
-                <div>
-                    <h3>{fotky[index]?.id ? 'Upravit' : 'Vytvořit'}</h3>
-                    
-                    <div>
+            <div className="card mb-3">
+                <div className="card-body">
+                    <h3 className="card-title">{fotky[index]?.id ? 'Upravit' : 'Vytvořit'}</h3>
+                    <div className="form-group">
                         <CreateEditFoto url={fotky[index]?.tempUrl ?? fotky[index]?.url} text={fotky[index]?.tempPopis ?? fotky[index]?.popis} />
-                        <div>Popis fotky:</div>
-                        <input
-                            type="text"
+                        <label htmlFor={`popisFotky_${index}`} className="mt-3">Popis fotky:</label>
+                        <input type="text" id={`popisFotky_${index}`}
+                            className="form-control"
                             value={fotky[index]?.tempPopis ?? fotky[index]?.popis ?? ""}
                             onChange={(e) => {
+                                const newPopis = e.target.value;
                                 setFotky((prevFotky) => {
                                     const updatedFotky = [...prevFotky];
-                                    updatedFotky[index].tempPopis = e.target.value;
+                                    updatedFotky[index] = {
+                                        ...updatedFotky[index],
+                                        tempPopis: newPopis
+                                    };
                                     return updatedFotky;
                                 });
                             }}
                             required
                          />
                     </div>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '20px' }}>
-                    <button type="button" onClick={handleSave}>Uložit</button>
-                    <button type="button" onClick={handleCancel}>Storno</button>
-                    {fotky[index]?.id && <button type="button" onClick={handleDelete}>Smazat</button>}
+                    <div className="d-flex justify-content-between mt-3">
+                        <button type="button" className="btn btn-success" onClick={handleSave}>Uložit</button>
+                        <button type="button" className="btn btn-secondary" onClick={handleCancel}>Storno</button>
+                        {fotky[index]?.id && <button type="button" className="btn btn-danger" onClick={handleDelete}>Smazat</button>}
+                    </div>
                 </div>
             </div>
         );
     } else { // jen zobrazení fotografie
         return (
-            <div>
-                <div>
-                    <a href="/" onClick={(e) => { e.preventDefault(); setFotky((prevFotky) => {
-                        const updatedFotky = [...prevFotky];
-                        updatedFotky[index] = {
-                            ...updatedFotky[index],
-                            edit: true
-                        };
-                        return updatedFotky;
-                        }); }}>
-                        <img src={fotky[index]?.url} alt={fotky[index]?.popis} width="100" />
-                    </a>
-                    <div>{fotky[index]?.popis}</div>
+            <a href="/" onClick={(e) => { e.preventDefault(); setFotky((prevFotky) => {
+                const updatedFotky = [...prevFotky];
+                updatedFotky[index] = {
+                    ...updatedFotky[index],
+                    edit: true
+                };
+                return updatedFotky;
+                }); }}>
+                <div className="card mb-3">
+                    <div className="card-body text-center">
+                        <img src={fotky[index]?.url} alt={fotky[index]?.popis} className="img-fluid img-thumbnail mb-2" width="100" />
+                        <div className="font-weight-bold">{fotky[index]?.popis}</div>
+                    </div>
                 </div>
-            </div>
+            </a>
         );
     }
 };

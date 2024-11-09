@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import debounce from 'lodash.debounce';
 import Fotografie from './Fotografie';
 
+
 const ZajezdForm = () => {
   const [zajezd, setZajezd] = useState({ nazev: "", popis: "" });   // data zájezdu z backendu
   const [fotky, setFotky] = useState([]);   // data fotek z backendu
@@ -60,52 +61,58 @@ const ZajezdForm = () => {
     }
   }, 500), [id]);
 
+  const Fotogalerie = () => {
+    const rows = [];
+    let row = [];
+    fotky.forEach((fotka, index) => {
+      row.push(<div className="col-lg-4 col-md-6 mb-4" key={`fotka-${fotka.id}-${index}`}>
+                <div className="card">
+                    <Fotografie key={`fotka-${fotky[index].id}`} index={index} fotky={fotky} setFotky={setFotky} />
+                </div>
+              </div>);
+      if ((row.length >= 3) || (index >= (fotky.length - 1))) { //pokud je v řadě minimálně 3 col. nebo je konec pole
+         rows.push(<div key={`fotogalerie-row-${index}`} className="row">{[...row]}</div>);
+         row = [];
+      }
+    });
+    return ( (rows.length !== 0) ? <div className="container mt-4">{rows}</div> : <div className="text-center">Nejsou žádné fotky</div> );
+  }
+
   if (loading) {
-    return <div>Načítání...</div>;
+    return <div className="text-center mt-5">Načítání...</div>;
   }
 
   if (!id) {
     return (
-      <div>
-        <h1>Vytvořit nový zájezd</h1>
-        <div>
-          <div>
-            <label>Název:</label>
+      <div className="container mt-5">
+        <h1 className="text-center mb-4">Vytvořit nový zájezd</h1>
+        <div className="card p-4">
+          <div className="form-group mb-3">
+            <label htmlFor="nazev">Název:</label>
             <input
               type="text"
+              className="form-control"
+              id="nazev"
               value={zajezd.nazev || ''}
               onChange={(e) => setZajezd({ ...zajezd, nazev: e.target.value })}
               required
             />
           </div>
-          <button type="button" onClick={() => debouncedHandleSubmit(zajezd)}>Vytvořit zájezd</button>
+          <button type="button" className="btn btn-primary" onClick={() => debouncedHandleSubmit(zajezd)}>Vytvořit zájezd</button>
         </div>
       </div>
     );
   } else {
-    //let fotogalerie = [];
-   //let fotogalerieRow = [];
-    //<div className="container mt-4">{fotogalerie}</div>
-    //fotky.forEach((fotka, index) => {
-      //fotogalerieRow.push(<div className="col-lg-4 col-md-6 mb-4" key={`fotka-${fotka.id}-${index}`}>
-                     //       <div className="card">
-                     //         <Fotografie index={index} fotky={fotky} setFotky={setFotky} zajezdId={id} />
-                      //      </div>
-                      //    </div>);
-      //if ((fotogalerieRow.length >= 3) || (index >= (fotky.length - 1))) {
-     //   fotogalerie.push(<div key={`fotogalerie-row-${index}`} className="row">{[...fotogalerieRow]}</div>);
-     //   fotogalerieRow = [];
-     // }
-   // });
-
     return (
-      <div>
-        <div>
-          <h1>Upravit Zájezd</h1>
-          <div>
-            <label>Název:</label>
+      <div className="container mt-5">
+        <div className="card p-4 mb-4">
+          <h1 className="text-center mb-4">Upravit Zájezd</h1>
+          <div className="form-group mb-3">
+            <label htmlFor="nazev">Název:</label>
             <input
               type="text"
+              className="form-control"
+              id="nazev"
               value={zajezd.nazev || ''}
               onChange={(e) => {
                 setZajezd({ ...zajezd, nazev: e.target.value });
@@ -114,9 +121,11 @@ const ZajezdForm = () => {
               required
             />
           </div>
-          <div>
-            <label>Popis zájezdu:</label>
+          <div className="form-group mb-3">
+            <label htmlFor="popis">Popis zájezdu:</label>
             <textarea
+              className="form-control"
+              id="popis"
               value={zajezd.popis || ''}
               onChange={(e) => {
                 setZajezd({ ...zajezd, popis: e.target.value });
@@ -127,13 +136,10 @@ const ZajezdForm = () => {
           </div>
         </div>
         <div>
-          <div><h3>Fotografie</h3><Fotografie fotky={fotky} setFotky={setFotky} zajezdId={id}/> </div>
-         <div>
-         {fotky.map((fotka, i) => (
-              <Fotografie key={`fotka-${fotka.id}-${i}`} index={i} fotky={fotky} setFotky={setFotky} zajezdId={id} />
-            ))}
-        
+          <div className="mb-4">
+            <Fotografie key={`fotografie-${id}`} fotky={fotky} setFotky={setFotky} zajezdId={id} />
           </div>
+          <Fotogalerie fotkyData={fotky} setFotkyData={setFotky} />
         </div>
       </div>
     );
