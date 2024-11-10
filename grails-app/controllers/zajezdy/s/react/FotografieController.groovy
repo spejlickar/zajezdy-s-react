@@ -13,10 +13,6 @@ class FotografieController extends RestfulController {
         super(Fotografie)
     }
 
-    def getFotografieByIdZajezd(){ // odešle všechny fotografie dle id zájezdu
-        respond fotografieService.getFotografieByIdZajezd(params.id as Long)
-    }
-
     @Get
     def getFile(String fileName){ // odešle soubor fotografie dle nazvu fotografie
         def result = fotografieService.getFileByIdFotografie(fileName)

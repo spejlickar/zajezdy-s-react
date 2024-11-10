@@ -1,13 +1,11 @@
 package zajezdy.s.react
 
-import grails.converters.JSON
 import grails.rest.RestfulController
 
 class ZajezdController extends RestfulController {
 
     static responseFormats = ['json', 'xml']
 
-    def fileUploadService
     ZajezdService zajezdService
 
 

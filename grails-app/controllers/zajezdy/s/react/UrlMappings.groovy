@@ -10,13 +10,9 @@ class UrlMappings {
 
         "/fotogalerie/$fileName"(controller: 'fotografie', action: 'getFile', method:'GET')
         "/api/fotografie"(resources: 'fotografie')
-        "/api/fotografie/zajezd/$id"(controller: 'fotografie', action: 'getFotografieByIdZajezd')
         "/api/zajezd"(resources: 'zajezd')
 
-
-        //"/api/fotografie/$id/file"(controller: 'fotografie', action: 'getFile')
-
-        "/"(view:"/home/index")
+        "/"(view: "/index")
         "500"(view:'/error')
         "404"(view:'/notFound')
         "/zajezd"(resources: 'zajezd')

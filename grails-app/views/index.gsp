@@ -3,17 +3,15 @@
 <head>
     <meta name="layout" content="main"/>
     <title>Seznam zájezdů</title>
+
 </head>
-<body>
-<h1>Seznam zájezdů</h1>
-<ul>
-    <g:each in="${zajezdy}" var="zajezd">
-        <li>
-            <a href="${createLink(controller: 'home', action: 'show', id: zajezd.id)}">
-                ${zajezd.nazev}
-            </a>
-        </li>
-    </g:each>
-</ul>
+<body class="container mt-5">
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Vítejte na zájezdy.cz</h1>
+        <p class="lead">Prozkoumejte naši nabídku a najděte ideální zájezd pro vás.</p>
+        <a href="${createLink(controller: 'home', action: 'index')}" class="btn btn-primary btn-lg mt-3">
+            Seznam zájezdů
+        </a>
+    </div>
 </body>
 </html>

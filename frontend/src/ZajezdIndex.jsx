@@ -44,7 +44,7 @@ const ZajezdIndex = () => {
           {zajezdy.map((zajezd) => (
             <tr key={zajezd.id}>
               <td>{zajezd.nazev}</td>
-              <td>{zajezd.popis}</td>
+              <td>{zajezd.popis.length > 50 ? `${zajezd.popis.substring(0, 50)}...` : zajezd.popis}</td>
               <td>
                 <button className="btn btn-primary mr-2" onClick={() => navigate(`/uprav/${zajezd.id}`)}>Upravit</button>
                 <button className="btn btn-danger" onClick={() => handleDelete(zajezd.id)}>Smazat</button>

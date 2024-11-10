@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import debounce from 'lodash.debounce';
 import Fotografie from './Fotografie';
+import { Container, Row, Col } from 'react-bootstrap';
 
 
 const ZajezdForm = () => {
@@ -46,7 +47,6 @@ const ZajezdForm = () => {
         if (response.ok) {
           const result = await response.json();
           if (id) { //došlo jen k úpravě stávajícího zájezdu
-            console.log(result);
             setZajezd(result);
           } else { //došlo k vytvoření nového zájezdu
             navigate(`/uprav/${result.id}`);
@@ -61,22 +61,6 @@ const ZajezdForm = () => {
     }
   }, 500), [id]);
 
-  const Fotogalerie = () => {
-    const rows = [];
-    let row = [];
-    fotky.forEach((fotka, index) => {
-      row.push(<div className="col-lg-4 col-md-6 mb-4" key={`fotka-${fotka.id}-${index}`}>
-                <div className="card">
-                    <Fotografie key={`fotka-${fotky[index].id}`} index={index} fotky={fotky} setFotky={setFotky} />
-                </div>
-              </div>);
-      if ((row.length >= 3) || (index >= (fotky.length - 1))) { //pokud je v řadě minimálně 3 col. nebo je konec pole
-         rows.push(<div key={`fotogalerie-row-${index}`} className="row">{[...row]}</div>);
-         row = [];
-      }
-    });
-    return ( (rows.length !== 0) ? <div className="container mt-4">{rows}</div> : <div className="text-center">Nejsou žádné fotky</div> );
-  }
 
   if (loading) {
     return <div className="text-center mt-5">Načítání...</div>;
@@ -139,7 +123,19 @@ const ZajezdForm = () => {
           <div className="mb-4">
             <Fotografie key={`fotografie-${id}`} fotky={fotky} setFotky={setFotky} zajezdId={id} />
           </div>
-          <Fotogalerie fotkyData={fotky} setFotkyData={setFotky} />
+          <div>
+          {(fotky.length === 0) ? <div className="alert alert-warning text-center">Neobsahuje žádné fotky</div>:
+            <Container>
+              <Row>
+                  {fotky.map((fotka,index) => (
+                    <Col key={fotka.id || `new-fotka-${index}`} md={4}>
+                        <Fotografie index={index} fotky={fotky} setFotky={setFotky} />
+                    </Col>
+                  ))}
+              </Row>
+            </Container>
+           }
+          </div>
         </div>
       </div>
     );

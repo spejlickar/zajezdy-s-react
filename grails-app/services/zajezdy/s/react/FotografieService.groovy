@@ -9,10 +9,8 @@ import java.nio.file.Paths
 
 @Transactional
 class FotografieService {
-    def grailsApplication
 
-    // vrátí soubor dle id fotografie jinak null
-    def getFileByIdFotografie(String fileName) {
+    def getFileByIdFotografie(String fileName) { // vrátí soubor dle názvu fotografie jinak null
         def file = new File(System.getProperty("user.dir") + "/grails-app/fotogalerie/" + fileName)
         if (file.exists()) {
             def contentType = Files.probeContentType(file.toPath()) ?: "application/octet-stream"
@@ -21,13 +19,8 @@ class FotografieService {
             return [status: 404, message: "Soubor nenalezen."]
         }
     }
-    //vráti všechny fotografie dle id zajezdu
-    def getFotografieByIdZajezd(Long id) {
-        return Fotografie.findAllByZajezd(Zajezd.get(id))
-    }
 
-    //vymaže fotografii dle id pokud existuje
-    def delete(Long id){
+    def delete(Long id){ //vymaže fotografii dle id pokud existuje
         Fotografie fotografie = Fotografie.get(id)
         String rootPath = System.getProperty("user.dir") + File.separator + "grails-app"
         Path targetPath = Paths.get(rootPath, fotografie.url)
@@ -43,11 +36,19 @@ class FotografieService {
     //pokud existuje soubor uloží ho do složky uploadDir a případně smaže starý (když existuje záznam) jinka nedělá nic
     def save(MultipartFile file, String dataString) {
         def data = JSON.parse(dataString)
-        Fotografie fotografie = (data.id) ? Fotografie.get(data.id) : new Fotografie()  // zjistění instance Fotografie
-        fotografie.zajezd = (fotografie.zajezd) ? fotografie.zajezd : Zajezd.get(data.zajezd.id as Long)  // zjistění reference na zájezd
+        Fotografie fotografie = (data.id) ? Fotografie.get(data.id) : new Fotografie()  // zjištění instance Fotografie
+        fotografie.zajezd = (fotografie.zajezd) ? fotografie.zajezd : Zajezd.get(data.zajezd.id as Long)  // zjištění reference na zájezd
         fotografie.popis = data.popis  // uložení nového popisu
         if (file) { // pokud přišel i soubor
             String rootPath = System.getProperty("user.dir") + File.separator + "grails-app"
+            Path fotogaleriePath = Paths.get(rootPath, "fotogalerie")
+            if (!Files.exists(fotogaleriePath)) {
+                try {
+                    Files.createDirectories(fotogaleriePath) // vytvoření složky "fotogalerie" pokud neexistuje
+                } catch (IOException e) {
+                    throw new RuntimeException("Chyba při vytváření složky fotogalerie: " + e.getMessage(), e)
+                }
+            }
             if (data.id) { // pokud jde o úpravu, tak případně dojde ke smazání stávající fotky
                 Path targetPath = Paths.get(rootPath, fotografie.url)
                 if (Files.exists(targetPath)) { // případné smazání
