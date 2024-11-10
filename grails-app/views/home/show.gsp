@@ -19,7 +19,7 @@
                     <g:each in="${zajezd.fotky}" var="foto" status="index">
                         <div class="carousel-item ${index == 0 ? 'active' : ''}">
                             <img src="${foto.url}" class="d-block w-100" alt="${foto.popis}">
-                            <div class="carousel-caption d-none d-md-block">
+                            <div class="carousel-caption d-block">
                                 <p>${foto.popis}</p>
                             </div>
                         </div>
